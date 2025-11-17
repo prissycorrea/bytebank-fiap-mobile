@@ -4,6 +4,8 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { styles } from './SplashScreen.styles';
 import packageJson from '../../../../package.json';
 
+const AnimatedImage = Animated.createAnimatedComponent(Image);
+
 export const SplashScreen = () => {
   const rotateAnim = useRef(new Animated.Value(0)).current;
 
@@ -41,17 +43,16 @@ export const SplashScreen = () => {
           resizeMode="contain"
         />
         <View style={styles.loaderContainer}>
-          <Animated.View
+          <AnimatedImage
+            source={require('../../../../assets/images/loader.png')}
             style={[
-              styles.spinnerWrapper,
+              styles.loader,
               {
                 transform: [{ rotate }],
               },
             ]}
-          >
-            <View style={styles.arcWhite} />
-            <View style={styles.arcBlue} />
-          </Animated.View>
+            resizeMode="contain"
+          />
         </View>
       </View>
       <Text style={styles.version}>v {packageJson.version}</Text>
