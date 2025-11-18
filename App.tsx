@@ -1,30 +1,48 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useFonts } from 'expo-font';
 import { SplashScreen } from './src/screens/splash';
+import { OnboardingScreen } from './src/screens/onboarding';
+import {
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
+} from '@expo-google-fonts/poppins';
+import {
+  WorkSans_400Regular,
+  WorkSans_500Medium,
+  WorkSans_600SemiBold,
+  WorkSans_700Bold,
+} from '@expo-google-fonts/work-sans';
 
 export default function App() {
-  return <SplashScreen />;
+  const [showSplash, setShowSplash] = useState(true);
+  const [fontsLoaded] = useFonts({
+    'Poppins': Poppins_400Regular,
+    'Poppins_400Regular': Poppins_400Regular,
+    'Poppins_500Medium': Poppins_500Medium,
+    'Poppins_600SemiBold': Poppins_600SemiBold,
+    'Poppins_700Bold': Poppins_700Bold,
+    'WorkSans_400Regular': WorkSans_400Regular,
+    'WorkSans_500Medium': WorkSans_500Medium,
+    'WorkSans_600SemiBold': WorkSans_600SemiBold,
+    'WorkSans-Bold': WorkSans_700Bold,
+    'WorkSans_700Bold': WorkSans_700Bold,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded) {
+      const timer = setTimeout(() => {
+        setShowSplash(false);
+      }, 3000); // 3 segundos
+
+      return () => clearTimeout(timer);
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded || showSplash) {
+    return <SplashScreen />;
+  }
+
+  return <OnboardingScreen />;
 }
-
-// import React from 'react';
-// import { NavigationContainer } from '@react-navigation/native';
-// import { createStackNavigator } from '@react-navigation/stack';
-// import { SplashScreen } from './src/screens/splash';
-
-// const Stack = createStackNavigator();
-
-// export default function App() {
-//   return (
-//     <NavigationContainer>
-//       <Stack.Navigator
-//         initialRouteName="Splash"  // ← SplashScreen como tela inicial
-//         screenOptions={{
-//           headerShown: false,
-//         }}
-//       >
-//         <Stack.Screen name="Splash" component={SplashScreen} />
-//         {/* Adicione suas outras telas aqui */}
-//         {/* <Stack.Screen name="Main" component={MainScreen} /> */}
-//       </Stack.Navigator>
-//     </NavigationContainer>
-//   );
-// }
