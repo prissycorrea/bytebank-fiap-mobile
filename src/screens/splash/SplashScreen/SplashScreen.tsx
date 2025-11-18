@@ -13,7 +13,7 @@ export const SplashScreen = () => {
     const animation = Animated.loop(
       Animated.timing(rotateAnim, {
         toValue: 1,
-        duration: 1200,
+        duration: 5000,
         useNativeDriver: true,
       })
     );
