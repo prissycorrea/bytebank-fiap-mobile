@@ -36,7 +36,7 @@ const slides: OnboardingSlide[] = [
     title: 'Controle total na palma da sua mão',
     description:
       'Bem-vindo ao ByteBank! Veja para onde seu dinheiro está indo e tome decisões financeiras mais inteligentes.',
-    descriptionColor: '#1F2C38',
+    descriptionColor: '#003689',
     buttonText: 'Próximo',
     buttonBgColor: '#0F2C59',
     buttonTextColor: '#FFFFFF',
@@ -49,7 +49,7 @@ const slides: OnboardingSlide[] = [
     title: 'Entenda e organize suas finanças',
     description:
       'Com gráficos e relatórios claros, você saberá exatamente suas receitas, despesas e onde pode economizar.',
-    descriptionColor: '#1F2C38',
+    descriptionColor: '#003689',
     buttonText: 'Próximo',
     buttonBgColor: '#0F2C59',
     buttonTextColor: '#FFFFFF',
