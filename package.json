@@ -4,8 +4,8 @@
   "main": "index.ts",
   "scripts": {
     "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "build:android": "eas build --platform android",
     "build:ios": "eas build --platform ios",
@@ -13,6 +13,9 @@
     "submit:ios": "eas submit --platform ios"
   },
   "dependencies": {
+    "@expo-google-fonts/poppins": "^0.4.1",
+    "@expo-google-fonts/work-sans": "^0.4.2",
+    "@react-native-async-storage/async-storage": "^1.24.0",
     "@react-native-firebase/app": "^23.4.1",
     "@react-native-firebase/auth": "^23.4.1",
     "@react-native-firebase/firestore": "^23.4.1",
@@ -20,9 +23,12 @@
     "@react-navigation/native": "^7.1.18",
     "@react-navigation/stack": "^7.5.0",
     "expo": "~54.0.20",
+    "expo-font": "~14.0.9",
     "expo-linear-gradient": "^15.0.7",
+    "expo-router": "^6.0.15",
     "expo-splash-screen": "^31.0.10",
     "expo-status-bar": "~3.0.8",
+    "firebase": "^12.6.0",
     "react": "19.1.0",
     "react-native": "0.81.5",
     "react-native-gesture-handler": "^2.x",
@@ -31,6 +37,7 @@
     "react-native-vector-icons": "^10.x"
   },
   "devDependencies": {
+    "@react-native-community/cli": "latest",
     "@types/react": "~19.1.0",
     "typescript": "~5.9.2"
   },

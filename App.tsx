@@ -19,14 +19,12 @@ export default function App() {
   const [showSplash, setShowSplash] = useState(true);
   const [fontsLoaded] = useFonts({
     'Poppins': Poppins_400Regular,
-    'Poppins_400Regular': Poppins_400Regular,
     'Poppins_500Medium': Poppins_500Medium,
     'Poppins_600SemiBold': Poppins_600SemiBold,
     'Poppins_700Bold': Poppins_700Bold,
     'WorkSans_400Regular': WorkSans_400Regular,
     'WorkSans_500Medium': WorkSans_500Medium,
     'WorkSans_600SemiBold': WorkSans_600SemiBold,
-    'WorkSans-Bold': WorkSans_700Bold,
     'WorkSans_700Bold': WorkSans_700Bold,
   });
 
