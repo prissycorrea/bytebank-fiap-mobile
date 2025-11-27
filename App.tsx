@@ -1,36 +1,48 @@
-import { StatusBar } from 'expo-status-bar';
-import { Button, StyleSheet, Text, View } from 'react-native';
-import { AuthProvider, useAuth } from './src/services/firebase/auth';
-
-function Main() {
-  // Chame o hook DENTRO do componente
-  const { login, signUp } = useAuth();
-
-  return (
-    <View style={styles.container}>
-      <Text>Hello, React Native!</Text>
-      <StatusBar style="auto" />
-      <Button title="Cadastro" onPress={() => {
-        signUp('jcmagalhaes@teste.com.br', '123456');
-      }} />
-      <Button title="Login" onPress={() => login('jcmagalhaes@teste.com.br', '123456')} />
-    </View>
-  );
-}
+import React, { useState, useEffect } from 'react';
+import { useFonts } from 'expo-font';
+import { SplashScreen } from './src/screens/splash';
+import { OnboardingScreen } from './src/screens/onboarding';
+import {
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
+} from '@expo-google-fonts/poppins';
+import {
+  WorkSans_400Regular,
+  WorkSans_500Medium,
+  WorkSans_600SemiBold,
+  WorkSans_700Bold,
+} from '@expo-google-fonts/work-sans';
 
 export default function App() {
-  return (
-    <AuthProvider>
-      <Main />
-    </AuthProvider>
-  );
-}
+  const [showSplash, setShowSplash] = useState(true);
+  const [fontsLoaded] = useFonts({
+    'Poppins': Poppins_400Regular,
+    'Poppins_400Regular': Poppins_400Regular,
+    'Poppins_500Medium': Poppins_500Medium,
+    'Poppins_600SemiBold': Poppins_600SemiBold,
+    'Poppins_700Bold': Poppins_700Bold,
+    'WorkSans_400Regular': WorkSans_400Regular,
+    'WorkSans_500Medium': WorkSans_500Medium,
+    'WorkSans_600SemiBold': WorkSans_600SemiBold,
+    'WorkSans-Bold': WorkSans_700Bold,
+    'WorkSans_700Bold': WorkSans_700Bold,
+  });
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+  useEffect(() => {
+    if (fontsLoaded) {
+      const timer = setTimeout(() => {
+        setShowSplash(false);
+      }, 3000); // 3 segundos
+
+      return () => clearTimeout(timer);
+    }
+  }, [fontsLoaded]);
+
+  if (!fontsLoaded || showSplash) {
+    return <SplashScreen />;
+  }
+
+  return <OnboardingScreen />;
+}
