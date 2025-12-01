@@ -2,6 +2,7 @@ import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
   signInWithEmailAndPassword,
+  signOut,
   User,
 } from "firebase/auth";
 import {
@@ -16,7 +17,7 @@ import { auth } from "./config";
 interface IAuthContext {
   user: User | null;
   login: (email: string, password: string) => Promise<boolean>;
-  signUp: (email: string, password: string) => Promise<boolean>;
+  signUp: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   isAuthenticated: boolean;
   loading: boolean;
@@ -27,7 +28,7 @@ const AuthContext = createContext<IAuthContext>({
   isAuthenticated: false,
   loading: true,
   login: async () => false,
-  signUp: async () => false,
+  signUp: async () => ({ success: false }),
   logout: () =>
     console.error("A função de logout foi chamada fora do AuthProvider."),
 });
@@ -59,16 +60,45 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await createUserWithEmailAndPassword(auth, email, password);
       console.log("AuthProvider :: signUp - usuário cadastrado com sucesso");
-      return true;
-    } catch (error) {
+      return { success: true };
+    } catch (error: any) {
       console.log("AuthProvider :: signUp - falha", error);
-      return false;
+      
+      let errorMessage = "Não foi possível criar sua conta. Tente novamente mais tarde.";
+      
+      if (error?.code) {
+        switch (error.code) {
+          case "auth/email-already-in-use":
+            errorMessage = "Este e-mail já está cadastrado. Tente fazer login ou use outro e-mail.";
+            break;
+          case "auth/invalid-email":
+            errorMessage = "O e-mail informado é inválido. Verifique e tente novamente.";
+            break;
+          case "auth/weak-password":
+            errorMessage = "A senha é muito fraca. Use uma senha com pelo menos 6 caracteres.";
+            break;
+          case "auth/network-request-failed":
+            errorMessage = "Erro de conexão. Verifique sua internet e tente novamente.";
+            break;
+          case "auth/operation-not-allowed":
+            errorMessage = "Operação não permitida. Entre em contato com o suporte.";
+            break;
+          default:
+            errorMessage = `Erro ao criar conta: ${error.message || "Erro desconhecido"}`;
+        }
+      }
+      
+      return { success: false, error: errorMessage };
     }
   };
 
-  const logout = () => {
-    console.log("AuthProvider :: logout - usuário deslogado com sucesso");
-    auth.signOut();
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      console.log("AuthProvider :: logout - usuário deslogado com sucesso");
+    } catch (error) {
+      console.log("AuthProvider :: logout - erro ao deslogar", error);
+    }
   };
 
   return (
