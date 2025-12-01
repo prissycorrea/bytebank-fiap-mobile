@@ -69,7 +69,11 @@ const slides: OnboardingSlide[] = [
   },
 ];
 
-export const OnboardingScreen: React.FC = () => {
+interface OnboardingScreenProps {
+  onComplete?: () => void;
+}
+
+export const OnboardingScreen: React.FC<OnboardingScreenProps> = ({ onComplete }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
 
@@ -83,6 +87,7 @@ export const OnboardingScreen: React.FC = () => {
       });
     } else {
       console.log('Onboarding concluído!');
+      onComplete?.();
     }
   };
 

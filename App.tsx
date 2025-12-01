@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useFonts } from 'expo-font';
 import { SplashScreen } from './src/screens/splash';
 import { OnboardingScreen } from './src/screens/onboarding';
+import { RegisterScreen } from './src/screens/auth';
+import { AuthProvider } from './src/services/firebase/auth';
 import {
   Poppins_400Regular,
   Poppins_500Medium,
@@ -17,6 +19,7 @@ import {
 
 export default function App() {
   const [showSplash, setShowSplash] = useState(true);
+  const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [fontsLoaded] = useFonts({
     'Poppins': Poppins_400Regular,
     'Poppins_500Medium': Poppins_500Medium,
@@ -38,9 +41,21 @@ export default function App() {
     }
   }, [fontsLoaded]);
 
+  const handleOnboardingComplete = () => {
+    setOnboardingComplete(true);
+  };
+
   if (!fontsLoaded || showSplash) {
     return <SplashScreen />;
   }
 
-  return <OnboardingScreen />;
+  return (
+    <AuthProvider>
+      {onboardingComplete ? (
+        <RegisterScreen />
+      ) : (
+        <OnboardingScreen onComplete={handleOnboardingComplete} />
+      )}
+    </AuthProvider>
+  );
 }
