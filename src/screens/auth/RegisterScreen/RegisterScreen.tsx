@@ -15,6 +15,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { styles } from './RegisterScreen.styles';
 import { useAuth } from '../../../services/firebase/auth';
+import { SuccessScreen } from '../SuccessScreen';
 
 // Componente para o ícone de olho
 const EyeIcon: React.FC<{ visible: boolean }> = ({ visible }) => (
@@ -33,6 +34,7 @@ export const RegisterScreen: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const { signUp } = useAuth();
 
@@ -75,24 +77,15 @@ export const RegisterScreen: React.FC = () => {
     const result = await signUp(email, password);
     
     if (result.success) {
-      Alert.alert(
-        'Sucesso',
-        'Conta criada com sucesso! Você já pode fazer login.',
-        [{ text: 'OK' }]
-      );
-      // Limpar formulário após cadastro bem-sucedido
-      setFullName('');
-      setEmail('');
-      setPassword('');
-      setConfirmPassword('');
+      // Mostrar tela de sucesso
+      setShowSuccess(true);
     } else {
       Alert.alert(
         'Erro',
         result.error || 'Não foi possível criar sua conta. Tente novamente mais tarde.'
       );
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   const togglePasswordVisibility = () => {
@@ -102,6 +95,10 @@ export const RegisterScreen: React.FC = () => {
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
+
+  if (showSuccess) {
+    return <SuccessScreen />;
+  }
 
   return (
     <SafeAreaView style={styles.container}>
