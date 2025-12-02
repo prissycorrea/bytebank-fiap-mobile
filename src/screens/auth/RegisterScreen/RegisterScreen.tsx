@@ -17,7 +17,6 @@ import { styles } from './RegisterScreen.styles';
 import { useAuth } from '../../../services/firebase/auth';
 import { SuccessScreen } from '../SuccessScreen';
 
-// Componente para o ícone de olho
 const EyeIcon: React.FC<{ visible: boolean }> = ({ visible }) => (
   <Feather
     name={visible ? 'eye' : 'eye-off'}
@@ -39,7 +38,6 @@ export const RegisterScreen: React.FC = () => {
   const { signUp } = useAuth();
 
   const handleRegister = async () => {
-    // Validações
     if (!fullName.trim()) {
       Alert.alert('Erro', 'Por favor, informe seu nome completo.');
       return;
@@ -50,7 +48,6 @@ export const RegisterScreen: React.FC = () => {
       return;
     }
 
-    // Validação básica de e-mail
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       Alert.alert('Erro', 'Por favor, informe um e-mail válido.');
@@ -77,7 +74,6 @@ export const RegisterScreen: React.FC = () => {
     const result = await signUp(email, password);
     
     if (result.success) {
-      // Mostrar tela de sucesso
       setShowSuccess(true);
     } else {
       Alert.alert(
