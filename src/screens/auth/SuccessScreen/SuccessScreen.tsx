@@ -24,7 +24,7 @@ export const SuccessScreen: React.FC = () => {
 
           <Text style={styles.successTitle}>Cadastro realizado!</Text>
           <Text style={styles.successSubtitle}>
-            Voltar para <Text style={styles.successSubtitleBold}>acessa conta</Text>.
+            Voltar para <Text style={styles.successSubtitleBold}>acessar conta</Text>.
           </Text>
         </View>
       </View>
