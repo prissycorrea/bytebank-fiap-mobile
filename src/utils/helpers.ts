@@ -16,3 +16,4 @@ export const normalize = (size: number): number => {
   return Math.round(PixelRatio.roundToNearestPixel(newSize));
 };
 
+

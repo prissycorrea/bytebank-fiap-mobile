@@ -16,6 +16,7 @@ import { Feather } from '@expo/vector-icons';
 import { styles } from './RegisterScreen.styles';
 import { useAuth } from '../../../services/firebase/auth';
 import { SuccessScreen } from '../SuccessScreen';
+import { LoginScreen } from '../LoginScreen';
 
 const EyeIcon: React.FC<{ visible: boolean }> = ({ visible }) => (
   <Feather
@@ -25,7 +26,11 @@ const EyeIcon: React.FC<{ visible: boolean }> = ({ visible }) => (
   />
 );
 
-export const RegisterScreen: React.FC = () => {
+interface RegisterScreenProps {
+  onBackToLogin?: () => void;
+}
+
+export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onBackToLogin }) => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -34,6 +39,7 @@ export const RegisterScreen: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
+  const [showLogin, setShowLogin] = useState(false);
 
   const { signUp } = useAuth();
 
@@ -91,6 +97,10 @@ export const RegisterScreen: React.FC = () => {
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
+
+  if (showLogin) {
+    return <LoginScreen />;
+  }
 
   if (showSuccess) {
     return <SuccessScreen />;
@@ -201,7 +211,18 @@ export const RegisterScreen: React.FC = () => {
           <View style={styles.footer}>
             <Text style={styles.footerText}>
               Já possui uma conta?{' '}
-              <Text style={styles.footerLink}>Acesse aqui</Text>
+              <Text 
+                style={styles.footerLink}
+                onPress={() => {
+                  if (onBackToLogin) {
+                    onBackToLogin();
+                  } else {
+                    setShowLogin(true);
+                  }
+                }}
+              >
+                Acesse aqui
+              </Text>
             </Text>
           </View>
         </View>

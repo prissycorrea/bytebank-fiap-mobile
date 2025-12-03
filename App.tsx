@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { useFonts } from 'expo-font';
 import { SplashScreen } from './src/screens/splash';
 import { OnboardingScreen } from './src/screens/onboarding';
-import { RegisterScreen } from './src/screens/auth';
-import { AuthProvider } from './src/services/firebase/auth';
+import { LoginScreen, RegisterScreen, SuccessScreen } from './src/screens/auth';
+import { DashboardScreen } from './src/screens/home';
+import { AuthProvider, useAuth } from './src/services/firebase/auth';
 import {
   Poppins_400Regular,
   Poppins_500Medium,
@@ -17,9 +18,10 @@ import {
   WorkSans_700Bold,
 } from '@expo-google-fonts/work-sans';
 
-export default function App() {
+const AppContent: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
+  const { isAuthenticated, loading: authLoading } = useAuth();
   const [fontsLoaded] = useFonts({
     'Poppins': Poppins_400Regular,
     'Poppins_500Medium': Poppins_500Medium,
@@ -45,17 +47,28 @@ export default function App() {
     setOnboardingComplete(true);
   };
 
-  if (!fontsLoaded || showSplash) {
+  if (!fontsLoaded || showSplash || authLoading) {
     return <SplashScreen />;
   }
 
+  // Se o usuário estiver autenticado, vai direto para o Dashboard
+  if (isAuthenticated) {
+    return <DashboardScreen />;
+  }
+
+  // Se o onboarding estiver completo, mostra a tela de login
+  if (onboardingComplete) {
+    return <LoginScreen />;
+  }
+
+  // Caso contrário, mostra o onboarding
+  return <OnboardingScreen onComplete={handleOnboardingComplete} />;
+};
+
+export default function App() {
   return (
     <AuthProvider>
-      {onboardingComplete ? (
-        <RegisterScreen />
-      ) : (
-        <OnboardingScreen onComplete={handleOnboardingComplete} />
-      )}
+      <AppContent />
     </AuthProvider>
   );
 }
