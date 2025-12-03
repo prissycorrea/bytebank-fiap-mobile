@@ -15,8 +15,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { styles } from './RegisterScreen.styles';
 import { useAuth } from '../../../services/firebase/auth';
+import { SuccessScreen } from '../SuccessScreen';
 
-// Componente para o ícone de olho
 const EyeIcon: React.FC<{ visible: boolean }> = ({ visible }) => (
   <Feather
     name={visible ? 'eye' : 'eye-off'}
@@ -33,11 +33,11 @@ export const RegisterScreen: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const { signUp } = useAuth();
 
   const handleRegister = async () => {
-    // Validações
     if (!fullName.trim()) {
       Alert.alert('Erro', 'Por favor, informe seu nome completo.');
       return;
@@ -48,7 +48,6 @@ export const RegisterScreen: React.FC = () => {
       return;
     }
 
-    // Validação básica de e-mail
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       Alert.alert('Erro', 'Por favor, informe um e-mail válido.');
@@ -75,24 +74,14 @@ export const RegisterScreen: React.FC = () => {
     const result = await signUp(email, password);
     
     if (result.success) {
-      Alert.alert(
-        'Sucesso',
-        'Conta criada com sucesso! Você já pode fazer login.',
-        [{ text: 'OK' }]
-      );
-      // Limpar formulário após cadastro bem-sucedido
-      setFullName('');
-      setEmail('');
-      setPassword('');
-      setConfirmPassword('');
+      setShowSuccess(true);
     } else {
       Alert.alert(
         'Erro',
         result.error || 'Não foi possível criar sua conta. Tente novamente mais tarde.'
       );
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   const togglePasswordVisibility = () => {
@@ -102,6 +91,10 @@ export const RegisterScreen: React.FC = () => {
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
+
+  if (showSuccess) {
+    return <SuccessScreen />;
+  }
 
   return (
     <SafeAreaView style={styles.container}>
