@@ -1,10 +1,7 @@
 import { StyleSheet, Dimensions } from 'react-native';
 
-const { width: SCREEN_WIDTH } = Dimensions.get('window');
-const LOGO_WIDTH = 60;
-const LOGO_MARGIN = 20;
-const PADDING_HORIZONTAL = 80; // 40px de cada lado
-const TEXT_CONTAINER_WIDTH = (SCREEN_WIDTH - PADDING_HORIZONTAL - LOGO_WIDTH - LOGO_MARGIN) * 0.75;
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT  } = Dimensions.get('window');
+const LOGO_WIDTH = Math.max(50, Math.min(70, SCREEN_HEIGHT * 0.08)); // Entre 50-70px
 
 export const styles = StyleSheet.create({
   container: {
@@ -13,16 +10,17 @@ export const styles = StyleSheet.create({
   slide: {
     width: SCREEN_WIDTH,
     flex: 1,
-    paddingBottom: 60,
+    paddingBottom: Math.max(50, SCREEN_HEIGHT * 0.07), 
     justifyContent: 'space-between',
   },
   contentContainer: {
     flex: 1,
-    paddingHorizontal: 40,
+    paddingHorizontal: Math.max(30, SCREEN_WIDTH * 0.1), 
     width: '100%',
     justifyContent: 'flex-start',
     alignItems: 'flex-start',
-    paddingTop: 450,
+    paddingTop: Math.max(350, Math.min(500, SCREEN_HEIGHT * 0.4)), 
+    marginLeft: SCREEN_WIDTH * -0.05,
   },
   contentRow: {
     flexDirection: 'row',
@@ -31,39 +29,39 @@ export const styles = StyleSheet.create({
     justifyContent: 'flex-start',
   },
   logoContainer: {
-    marginRight: 10,
+    marginRight: SCREEN_WIDTH * 0.025,
     alignItems: 'flex-start',
     flexShrink: 0,
     justifyContent: 'flex-start',
   },
   textContainer: {
-    width: TEXT_CONTAINER_WIDTH,
+    flex: 1, 
     alignItems: 'flex-start',
     flexShrink: 1,
     justifyContent: 'flex-start',
     paddingTop: 0,
   },
   logo: {
-    width: 60,
-    height: 60,
-    marginTop: -55,
+    width: LOGO_WIDTH,
+    height: LOGO_WIDTH,
+    marginTop: -(LOGO_WIDTH * 0.92),
   },
   title: {
-    fontSize: 44,
-    fontFamily: 'WorkSans-Bold',
+    fontSize: SCREEN_WIDTH * 0.11,
+    fontFamily: 'WorkSans_700Bold',
     textAlign: 'left',
     marginTop: 0,
-    marginBottom: 20,
+    marginBottom: SCREEN_HEIGHT * 0.025,
     paddingTop: 0,
-    lineHeight: 56,
+    lineHeight: SCREEN_WIDTH * 0.14,
     color: '#0F2C59',
     flexShrink: 1,
   },
   description: {
-    fontSize: 16,
+    fontSize: SCREEN_WIDTH * 0.04, 
     fontFamily: 'Poppins_500Medium',
     textAlign: 'left',
-    lineHeight: 24,
+    lineHeight: SCREEN_WIDTH * 0.06, 
     letterSpacing: 1,
     color: '#FFFFFF',
   },
@@ -71,15 +69,15 @@ export const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingHorizontal: 40,
+    paddingHorizontal: SCREEN_WIDTH * 0.1,
   },
   dotsContainer: {
     flexDirection: 'row',
   },
   dot: {
-    width: 24,
-    height: 6,
-    borderRadius: 3,
+    width: SCREEN_WIDTH * 0.06,
+    height: SCREEN_HEIGHT * 0.0075,
+    borderRadius: SCREEN_HEIGHT * 0.00375,
     backgroundColor: 'rgba(255, 255, 255, 0.3)',
   },
   dotMargin: {
@@ -87,25 +85,26 @@ export const styles = StyleSheet.create({
   },
   dotActive: {
     backgroundColor: '#FFFFFF',
-    width: 32,
+    width: SCREEN_WIDTH * 0.08,
   },
   button: {
-    paddingVertical: 14,
-    paddingHorizontal: 32,
+    paddingVertical: SCREEN_HEIGHT * 0.0175,
+    paddingHorizontal: SCREEN_WIDTH * 0.08,
     borderRadius: 50,
-    minWidth: 91,
+    minWidth: SCREEN_WIDTH * 0.1,
+    maxWidth: SCREEN_WIDTH * 0.3,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
   buttonText: {
-    fontSize: 16,
+    fontSize: SCREEN_WIDTH * 0.035, 
     fontWeight: '600',
   },
   buttonIcon: {
-    width: 18,
-    height: 18,
-    marginLeft: 8,
+    width: SCREEN_WIDTH * 0.045,
+    height: SCREEN_WIDTH * 0.045,
+    marginLeft: SCREEN_WIDTH * 0.02, 
   },
 });
 
