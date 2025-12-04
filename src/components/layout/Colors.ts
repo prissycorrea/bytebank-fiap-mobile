@@ -1,0 +1,11 @@
+export const PRIMARY_BLUE = "#001C36"; // Fundo azul escuro
+export const SECONDARY_BLUE = "#003689"; // Azul claro para botões e realces
+export const LIGHT_BLUE = "#DDEBF8"; // Azul muito claro para fundos secundários
+export const SUCCESS = "#8CC63F"; // Verde para indicações de sucesso
+export const DANGER = "#FF4C4C"; // Vermelho para indicações de erro
+export const WARNING = "#FFC107"; // Amarelo para avisos
+export const INFO = "#17A2B8"; // Azul para informações gerais
+export const WHITE = "#FFFFFF"; // Branco
+export const BLACK = "#000000"; // Preto
+export const GRAY_LIGHT = "#F8F9FA"; // Cinza claro para fundos
+export const GRAY_DARK = "#B6B6B7"; // Cinza escuro para textos e elementos secundários

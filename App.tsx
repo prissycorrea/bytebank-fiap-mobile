@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useFonts } from 'expo-font';
 import { SplashScreen } from './src/screens/splash';
 import { OnboardingScreen } from './src/screens/onboarding';
-import { RegisterScreen } from './src/screens/auth';
+import DashboardScreen from './src/screens/home/DashboardScreen/DashboardScreen';
 import { AuthProvider } from './src/services/firebase/auth';
 import {
   Poppins_400Regular,
@@ -52,7 +52,7 @@ export default function App() {
   return (
     <AuthProvider>
       {onboardingComplete ? (
-        <RegisterScreen />
+        <DashboardScreen />
       ) : (
         <OnboardingScreen onComplete={handleOnboardingComplete} />
       )}
