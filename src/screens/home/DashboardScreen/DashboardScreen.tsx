@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -20,26 +20,29 @@ import SummaryCard from "../../../components/common/SummaryCard/SummaryCard";
 import FinancialCard, {
   FinancialCardProps,
 } from "../../../components/common/FinancialCard/FinancialCard";
-
-const CAROUSEL_LIST: FinancialCardProps[] = [
-  {
-    type: "income",
-    label: "Receitas",
-    value: "8.500,00",
-  },
-  {
-    type: "expense",
-    label: "Despesas",
-    value: "4.500,00",
-  },
-  {
-    type: "balance",
-    label: "Saldo",
-    value: "12.450,00",
-  },
-];
+import { useAuth } from "../../../services/firebase/auth";
+import { getBalance, getMyTransactions, getSummary } from "../../../services/transactions";
+import { ITransaction } from "../../../types/transaction";
+import { formatCurrency } from "../../../utils/formatters";
 
 const DashboardScreen: React.FC = () => {
+  const { user, userData } = useAuth();
+  const [transactions, setTransactions] = useState<ITransaction[]>([]);
+  const [balance, setBalance] = useState<number>(0);
+  const [summaryList, setSummaryList] = useState<FinancialCardProps[]>([]);
+
+  useEffect(() => {
+    if (user) {
+      getMyTransactions(user?.uid).then((transactions) =>
+        setTransactions(transactions)
+      );
+
+      getBalance(user?.uid).then((balance) => setBalance(balance));
+
+      getSummary(user?.uid).then((summary) => setSummaryList(summary));
+    }
+  }, [user]);
+
   return (
     <LinearGradient
       colors={[PRIMARY_BLUE, SECONDARY_BLUE]}
@@ -51,9 +54,9 @@ const DashboardScreen: React.FC = () => {
       {/* <SafeAreaView style={styles.headerBackground} />  */}
       <ScrollView style={DashboardScreenStyles.container}>
         {/* 1. HEADER E SALDO */}
-        <SummaryCard />
+        <SummaryCard name={userData?.name || "Usuário"} balance={formatCurrency(balance)} />
         {/* 2. CARTÕES FINANCEIROS */}
-        <FinancialCard items={CAROUSEL_LIST} />
+        <FinancialCard items={summaryList} />
       </ScrollView>
     </LinearGradient>
   );

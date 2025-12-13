@@ -16,6 +16,7 @@ export const FinancialCardStyles = {
     backgroundColor: LIGHT_BLUE_TRANSPARENT,
     borderRadius: 25,
     padding: 16,
+    minWidth: SLIDE_WIDTH,
     // Garante que o container do FlatList tenha uma altura definida para renderizar
     // height: 96,
   },

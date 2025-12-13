@@ -52,16 +52,20 @@ const AppContent: React.FC = () => {
     return <SplashScreen />;
   }
 
-  // Se o usuário estiver autenticado, vai direto para o Dashboard
-  if (isAuthenticated) {
-    return <DashboardScreen />;
-  }
-
   // Se o onboarding estiver completo, mostra a tela de login
   if (onboardingComplete) {
     if (isRegistering) {
       return <RegisterScreen onBackToLogin={() => setIsRegistering(false)} />;
     }
+    return <LoginScreen onRegister={() => setIsRegistering(true)} />;
+  }
+
+  // Se o usuário estiver autenticado, vai direto para o Dashboard
+  if (isAuthenticated) {
+    return <DashboardScreen />;
+  }
+  
+  if (!isAuthenticated) {
     return <LoginScreen onRegister={() => setIsRegistering(true)} />;
   }
 

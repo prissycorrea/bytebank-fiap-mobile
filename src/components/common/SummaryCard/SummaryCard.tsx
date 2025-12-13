@@ -6,14 +6,16 @@ import { SummaryCardStyles } from "./SummaryCard.styles";
 import { PRIMARY_BLUE } from "../../layout/Colors";
 import { useAuth } from "../../../services/firebase/auth";
 
-const SummaryCard: React.FC = () => {
-  const { userData, logout } = useAuth();
+const SummaryCard: React.FC<{ name: string; balance: string }> = ({
+  name,
+  balance,
+}) => {
+  const { logout } = useAuth();
 
   const handleLogout = async () => {
     await logout();
   };
 
-  const currentBalance: string = "12.450,00";
   return (
     <View style={SummaryCardStyles.headerContainer}>
       <View style={SummaryCardStyles.headerRow}>
@@ -28,7 +30,9 @@ const SummaryCard: React.FC = () => {
               style={SummaryCardStyles.headerAvatarIcon}
             />
           </View>
-          <Text style={SummaryCardStyles.headerGreeting}>Oi, {userData?.name || "Usuário"}!</Text>
+          <Text style={SummaryCardStyles.headerGreeting}>
+            Oi, {name}!
+          </Text>
         </View>
       </View>
 
@@ -36,12 +40,14 @@ const SummaryCard: React.FC = () => {
         <View>
           <Text style={SummaryCardStyles.headerBalanceLabel}>Saldo atual</Text>
           <Text style={SummaryCardStyles.headerBalanceValue}>
-            R$ {currentBalance}
+            {balance}
           </Text>
         </View>
         {/* Botão Extrato */}
-        <TouchableOpacity style={SummaryCardStyles.headerStatementButton}
-            onPress={handleLogout}>
+        <TouchableOpacity
+          style={SummaryCardStyles.headerStatementButton}
+          onPress={handleLogout}
+        >
           <Text style={SummaryCardStyles.headerStatementButtonText}>
             Extrato
           </Text>

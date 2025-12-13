@@ -14,7 +14,7 @@ const CarouselItem = (item: FinancialCardProps) => (
   <View style={FinancialCardStyles.card}>
     {CarouselIconType(item.type)}
     <Text style={FinancialCardStyles.headerBalanceLabel}>{item.label}</Text>
-    <Text style={FinancialCardStyles.headerBalanceValue}>R$ {item.value}</Text>
+    <Text style={FinancialCardStyles.headerBalanceValue}>{item.value}</Text>
   </View>
 );
 
@@ -40,11 +40,10 @@ const FinancialCard: React.FC<{ items: FinancialCardProps[] }> = ({ items }) => 
         keyExtractor={(item) => item.type}
         // --- ⚙️ Propriedades Essenciais do Carrossel ---
         horizontal={true} // Rola horizontalmente
-        pagingEnabled={true} // Força a rolagem a parar no limite de cada item (o efeito de "página")
         showsHorizontalScrollIndicator={false} // Oculta a barra de rolagem
         // onMomentumScrollEnd={(event) => { /* Opcional: Lógica para saber em qual slide parou */ }}
         // ---------------------------------------------
-        contentContainerStyle={{ gap: 16 }} // Espaçamento entre os cards
+        contentContainerStyle={{ gap: 16, paddingInlineEnd: 16 }} // Espaçamento entre os cards
       />
     </View>
   );
