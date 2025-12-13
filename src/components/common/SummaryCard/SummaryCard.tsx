@@ -7,7 +7,7 @@ import { PRIMARY_BLUE } from "../../layout/Colors";
 import { useAuth } from "../../../services/firebase/auth";
 
 const SummaryCard: React.FC = () => {
-  const { logout } = useAuth();
+  const { userData, logout } = useAuth();
 
   const handleLogout = async () => {
     await logout();
@@ -28,7 +28,7 @@ const SummaryCard: React.FC = () => {
               style={SummaryCardStyles.headerAvatarIcon}
             />
           </View>
-          <Text style={SummaryCardStyles.headerGreeting}>Oi, Joana!</Text>
+          <Text style={SummaryCardStyles.headerGreeting}>Oi, {userData?.name || "Usuário"}!</Text>
         </View>
       </View>
 

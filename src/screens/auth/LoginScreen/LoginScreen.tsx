@@ -55,7 +55,7 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onRegister }) => {
 
     setLoading(true);
 
-    const result = await login(email, password);
+    const result = await login({email, password});
     
     if (!result.success) {
       Alert.alert(

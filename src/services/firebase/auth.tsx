@@ -12,12 +12,15 @@ import {
   useEffect,
   useState,
 } from "react";
-import { auth } from "./config";
+import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
+import { firabaseConfigAuth } from "./config";
+import { IUser } from '../../types/user';
 
 interface IAuthContext {
   user: User | null;
-  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
-  signUp: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  userData: IUser | null;
+  login: (auth: Omit<IUser, 'name'>) => Promise<{ success: boolean; error?: string }>;
+  signUp: (register: IUser) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   isAuthenticated: boolean;
   loading: boolean;
@@ -25,6 +28,7 @@ interface IAuthContext {
 
 const AuthContext = createContext<IAuthContext>({
   user: null,
+  userData: null,
   isAuthenticated: false,
   loading: true,
   login: async () => ({ success: false }),
@@ -35,26 +39,44 @@ const AuthContext = createContext<IAuthContext>({
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [userData, setUserData] = useState<IUser | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (_user) => {
+    const unsubscribe = onAuthStateChanged(firabaseConfigAuth, async (_user) => {
       setUser(_user);
+
+      if (_user) {
+        try {
+          const db = getFirestore(firabaseConfigAuth.app);
+          const docRef = doc(db, 'users', _user.uid);
+          const docSnap = await getDoc(docRef);
+
+          if (docSnap.exists()) {
+            setUserData(docSnap.data() as IUser);
+          }
+        } catch (error) {
+          console.log("Erro ao buscar dados do usuário no Firestore", error);
+        }
+      } else {
+        setUserData(null);
+      }
+
       setLoading(false);
     });
     return () => unsubscribe();
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (user: Omit<IUser, 'name'>) => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await signInWithEmailAndPassword(firabaseConfigAuth, user.email, user.password);
       console.log("AuthProvider :: login - usuário logado com sucesso");
       return { success: true };
     } catch (error: any) {
       console.log("AuthProvider :: login - falha ao logar usuário", error);
-      
+
       let errorMessage = "E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.";
-      
+
       if (error?.code) {
         switch (error.code) {
           case "auth/user-not-found":
@@ -84,10 +106,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
-  const signUp = async (email: string, password: string) => {
+  const signUp = async (userData: IUser) => {
     try {
-      await createUserWithEmailAndPassword(auth, email, password);
-      console.log("AuthProvider :: signUp - usuário cadastrado com sucesso");
+      const userCredential = await createUserWithEmailAndPassword(firabaseConfigAuth, userData.email, userData.password);
+      const uid = userCredential.user.uid;
+
+      const db = getFirestore(firabaseConfigAuth.app);
+
+      await setDoc(doc(db, 'users', uid), {
+        name: userData.name,
+        email: userData.email,
+        createdAt: new Date().toISOString(),
+      });
+      console.log('Usuário cadastrado e dados salvos no banco!');
+
       return { success: true };
     } catch (error: any) {
       console.log("AuthProvider :: signUp - falha", error);
@@ -122,7 +154,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const logout = async () => {
     try {
-      await signOut(auth);
+      await signOut(firabaseConfigAuth);
       console.log("AuthProvider :: logout - usuário deslogado com sucesso");
     } catch (error) {
       console.log("AuthProvider :: logout - erro ao deslogar", error);
@@ -133,6 +165,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     <AuthContext.Provider
       value={{
         user,
+        userData,
         login,
         signUp,
         logout,
