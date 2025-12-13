@@ -4,8 +4,15 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { MaterialIcons } from "@expo/vector-icons";
 import { SummaryCardStyles } from "./SummaryCard.styles";
 import { PRIMARY_BLUE } from "../../layout/Colors";
+import { useAuth } from "../../../services/firebase/auth";
 
 const SummaryCard: React.FC = () => {
+  const { logout } = useAuth();
+
+  const handleLogout = async () => {
+    await logout();
+  };
+
   const currentBalance: string = "12.450,00";
   return (
     <View style={SummaryCardStyles.headerContainer}>
@@ -33,7 +40,8 @@ const SummaryCard: React.FC = () => {
           </Text>
         </View>
         {/* Botão Extrato */}
-        <TouchableOpacity style={SummaryCardStyles.headerStatementButton}>
+        <TouchableOpacity style={SummaryCardStyles.headerStatementButton}
+            onPress={handleLogout}>
           <Text style={SummaryCardStyles.headerStatementButtonText}>
             Extrato
           </Text>

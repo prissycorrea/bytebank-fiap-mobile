@@ -15,7 +15,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { styles } from './LoginScreen.styles';
 import { useAuth } from '../../../services/firebase/auth';
-import { RegisterScreen } from '../RegisterScreen';
 
 const EyeIcon: React.FC<{ visible: boolean }> = ({ visible }) => (
   <Feather
@@ -25,12 +24,15 @@ const EyeIcon: React.FC<{ visible: boolean }> = ({ visible }) => (
   />
 );
 
-export const LoginScreen: React.FC = () => {
+type LoginScreenProps = {
+  onRegister: () => void;
+};
+
+export const LoginScreen: React.FC<LoginScreenProps> = ({ onRegister }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [showRegister, setShowRegister] = useState(false);
 
   const { login } = useAuth();
 
@@ -67,10 +69,6 @@ export const LoginScreen: React.FC = () => {
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
-  if (showRegister) {
-    return <RegisterScreen onBackToLogin={() => setShowRegister(false)} />;
-  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -148,7 +146,7 @@ export const LoginScreen: React.FC = () => {
                 Não possui uma conta?{' '}
                 <Text 
                   style={styles.footerLink}
-                  onPress={() => setShowRegister(true)}
+                  onPress={onRegister}
                 >
                   Cadastre-se
                 </Text>
@@ -160,4 +158,3 @@ export const LoginScreen: React.FC = () => {
     </SafeAreaView>
   );
 };
-

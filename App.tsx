@@ -3,7 +3,6 @@ import { useFonts } from 'expo-font';
 import { SplashScreen } from './src/screens/splash';
 import { OnboardingScreen } from './src/screens/onboarding';
 import { LoginScreen, RegisterScreen, SuccessScreen } from './src/screens/auth';
-import { DashboardScreen } from './src/screens/home';
 import { AuthProvider, useAuth } from './src/services/firebase/auth';
 import {
   Poppins_400Regular,
@@ -17,10 +16,12 @@ import {
   WorkSans_600SemiBold,
   WorkSans_700Bold,
 } from '@expo-google-fonts/work-sans';
+import DashboardScreen from './src/screens/home/DashboardScreen/DashboardScreen';
 
 const AppContent: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
   const { isAuthenticated, loading: authLoading } = useAuth();
   const [fontsLoaded] = useFonts({
     'Poppins': Poppins_400Regular,
@@ -58,7 +59,10 @@ const AppContent: React.FC = () => {
 
   // Se o onboarding estiver completo, mostra a tela de login
   if (onboardingComplete) {
-    return <LoginScreen />;
+    if (isRegistering) {
+      return <RegisterScreen onBackToLogin={() => setIsRegistering(false)} />;
+    }
+    return <LoginScreen onRegister={() => setIsRegistering(true)} />;
   }
 
   // Caso contrário, mostra o onboarding
