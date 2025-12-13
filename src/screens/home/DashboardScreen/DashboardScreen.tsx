@@ -17,6 +17,27 @@ import {
 } from "../../../components/layout/Colors";
 import { SummaryCardStyles } from "../../../components/common/SummaryCard/SummaryCard.styles";
 import SummaryCard from "../../../components/common/SummaryCard/SummaryCard";
+import FinancialCard, {
+  FinancialCardProps,
+} from "../../../components/common/FinancialCard/FinancialCard";
+
+const CAROUSEL_LIST: FinancialCardProps[] = [
+  {
+    type: "income",
+    label: "Receitas",
+    value: "8.500,00",
+  },
+  {
+    type: "expense",
+    label: "Despesas",
+    value: "4.500,00",
+  },
+  {
+    type: "balance",
+    label: "Saldo",
+    value: "12.450,00",
+  },
+];
 
 const DashboardScreen: React.FC = () => {
   return (
@@ -31,6 +52,8 @@ const DashboardScreen: React.FC = () => {
       <ScrollView style={DashboardScreenStyles.container}>
         {/* 1. HEADER E SALDO */}
         <SummaryCard />
+        {/* 2. CARTÕES FINANCEIROS */}
+        <FinancialCard items={CAROUSEL_LIST} />
       </ScrollView>
     </LinearGradient>
   );
