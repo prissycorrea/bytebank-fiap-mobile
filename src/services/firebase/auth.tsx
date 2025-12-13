@@ -16,7 +16,7 @@ import { auth } from "./config";
 
 interface IAuthContext {
   user: User | null;
-  login: (email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   signUp: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   isAuthenticated: boolean;
@@ -27,7 +27,7 @@ const AuthContext = createContext<IAuthContext>({
   user: null,
   isAuthenticated: false,
   loading: true,
-  login: async () => false,
+  login: async () => ({ success: false }),
   signUp: async () => ({ success: false }),
   logout: () =>
     console.error("A função de logout foi chamada fora do AuthProvider."),
@@ -49,10 +49,38 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     try {
       await signInWithEmailAndPassword(auth, email, password);
       console.log("AuthProvider :: login - usuário logado com sucesso");
-      return true;
-    } catch (error) {
+      return { success: true };
+    } catch (error: any) {
       console.log("AuthProvider :: login - falha ao logar usuário", error);
-      return false;
+      
+      let errorMessage = "E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.";
+      
+      if (error?.code) {
+        switch (error.code) {
+          case "auth/user-not-found":
+            errorMessage = "E-mail não encontrado. Verifique se o e-mail está correto ou cadastre-se.";
+            break;
+          case "auth/wrong-password":
+            errorMessage = "Senha incorreta. Tente novamente.";
+            break;
+          case "auth/invalid-email":
+            errorMessage = "O e-mail informado é inválido. Verifique e tente novamente.";
+            break;
+          case "auth/user-disabled":
+            errorMessage = "Esta conta foi desabilitada. Entre em contato com o suporte.";
+            break;
+          case "auth/network-request-failed":
+            errorMessage = "Erro de conexão. Verifique sua internet e tente novamente.";
+            break;
+          case "auth/too-many-requests":
+            errorMessage = "Muitas tentativas de login. Tente novamente mais tarde.";
+            break;
+          default:
+            errorMessage = `Erro ao fazer login: ${error.message || "Erro desconhecido"}`;
+        }
+      }
+      
+      return { success: false, error: errorMessage };
     }
   };
 

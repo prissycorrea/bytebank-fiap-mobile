@@ -18,9 +18,9 @@ export const styles = StyleSheet.create({
   scrollContent: {
     flexGrow: 1,
     paddingHorizontal: normalize(24),
-    justifyContent: 'center',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    paddingBottom: normalize(20),
+    paddingBottom: normalize(40),
     backgroundColor: '#DDEBF8',
   },
   header: {
@@ -36,13 +36,15 @@ export const styles = StyleSheet.create({
   },
   content: {
     width: '95%',
-    justifyContent: 'center',
+    flex: 1,
+    justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: normalize(40),
   },
   title: {
     fontSize: normalize(24),
-    fontFamily: 'WorkSans-Bold',
+    fontFamily: 'WorkSans_700Bold',
+    fontWeight: 'bold',
     color: '#0F2C59',
     marginBottom: normalize(40),
     textAlign: 'left',
@@ -110,6 +112,9 @@ export const styles = StyleSheet.create({
   footer: {
     marginTop: normalize(60),
     alignItems: 'center',
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'center',
   },
   footerText: {
     fontSize: normalize(14),
@@ -118,7 +123,9 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
   },
   footerLink: {
-    fontWeight: 'bold',
+    fontSize: normalize(14),
     fontFamily: 'Poppins_600SemiBold',
+    fontWeight: 'bold',
+    color: '#0F2C59',
   },
 });
