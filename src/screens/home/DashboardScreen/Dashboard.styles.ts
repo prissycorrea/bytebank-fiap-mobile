@@ -15,6 +15,7 @@ const DashboardScreenStyles = StyleSheet.create({
     borderTopStartRadius: 28,
     borderTopEndRadius: 28,
     backgroundColor: LIGHT_BLUE,
+    marginTop: -1,
   },
   titleSection: {
     fontSize: 16,
@@ -23,7 +24,7 @@ const DashboardScreenStyles = StyleSheet.create({
   },
   redirectSection: {
     fontSize: 12,
-    letterSpacing: 1.5
+    letterSpacing: 1.5,
   },
 });
 

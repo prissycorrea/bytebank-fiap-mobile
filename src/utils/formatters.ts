@@ -1,18 +1,40 @@
 export function formatCurrency(
   value: number,
-  isNegative: boolean = false
+  isNegative: boolean = false,
+  withSymbol: boolean = true
 ): string {
   if (isNegative) {
     value = value * -1;
-
-    return value.toLocaleString("pt-BR", {
-      style: "currency",
-      currency: "BRL",
-    });
   }
 
   return value.toLocaleString("pt-BR", {
-    style: "currency",
+    style: withSymbol ? "currency" : "decimal",
     currency: "BRL",
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
   });
+}
+
+export function formatDate(date: Date | null): string {
+  if (!date) return "";
+
+  const day = date.getDate();
+  const months = [
+    "Jan",
+    "Fev",
+    "Mar",
+    "Abr",
+    "Mai",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Set",
+    "Out",
+    "Nov",
+    "Dez",
+  ];
+  const month = months[date.getMonth()];
+  const year = date.getFullYear();
+
+  return `${day} ${month} ${year}`;
 }

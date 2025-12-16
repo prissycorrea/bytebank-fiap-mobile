@@ -3,7 +3,7 @@ import { Text, View } from "react-native";
 import { ITransaction } from "../../../types/transaction";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 import { TransactionItemStyles } from "./TransactionItem.styles";
-import { formatCurrency } from "../../../utils/formatters";
+import { formatCurrency, formatDate } from "../../../utils/formatters";
 
 const TransactionItem: React.FC<{ transaction: ITransaction }> = ({
   transaction,
@@ -15,7 +15,7 @@ const TransactionItem: React.FC<{ transaction: ITransaction }> = ({
   const isIncome = transaction.transactionType === "INCOME";
   const date = transaction.createdAt ? new Date(transaction.createdAt) : null;
   const formattedDate =
-    date && !isNaN(date.getTime()) ? date.toISOString().split("T")[0] : "";
+    date && !isNaN(date.getTime()) ? date : null;
 
   return (
     <View style={TransactionItemStyles.container}>
@@ -35,9 +35,9 @@ const TransactionItem: React.FC<{ transaction: ITransaction }> = ({
             ? transaction.description
             : transaction.category}
         </Text>
-        <Text style={TransactionItemStyles.date}>{formattedDate}</Text>
+        <Text style={TransactionItemStyles.date}>{formatDate(formattedDate)}</Text>
       </View>
-      <Text style={TransactionItemStyles.price}>{formatCurrency(transaction.price, !isIncome)}</Text>
+      <Text style={TransactionItemStyles.price}>{formatCurrency(transaction.price, !isIncome, false)}</Text>
     </View>
   );
 };

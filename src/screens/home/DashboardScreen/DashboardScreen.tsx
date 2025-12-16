@@ -1,22 +1,13 @@
 import React, { useEffect, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TouchableOpacity,
-  SectionList,
-} from "react-native";
-import SafeAreaView from "react-native-safe-area-context";
+import { View, Text, SectionList, StatusBar } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
 import DashboardScreenStyles from "./Dashboard.styles";
-import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 import { LinearGradient } from "expo-linear-gradient";
 import {
   PRIMARY_BLUE,
   SECONDARY_BLUE,
 } from "../../../components/layout/Colors";
-import { SummaryCardStyles } from "../../../components/common/SummaryCard/SummaryCard.styles";
 import SummaryCard from "../../../components/common/SummaryCard/SummaryCard";
 import FinancialCard, {
   FinancialCardProps,
@@ -30,7 +21,6 @@ import {
 import { ITransaction } from "../../../types/transaction";
 import { formatCurrency } from "../../../utils/formatters";
 import TransactionItem from "../../../components/common/TransactionItem/TransactionItem";
-import TransactionWiget from "../../Transactions/TransactionWidget/TransactionWidget";
 import { TransactionWidgetStyles } from "../../Transactions/TransactionWidget/TransactionWidget.styles";
 
 type SectionData = {
@@ -39,38 +29,54 @@ type SectionData = {
 };
 
 const DashboardScreen: React.FC = () => {
+  // 1. Hook para pegar a altura da barra de status (ex: 47px no iPhone)
+  const insets = useSafeAreaInsets();
+
   const { user, userData } = useAuth();
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const [balance, setBalance] = useState<number>(0);
   const [summaryList, setSummaryList] = useState<FinancialCardProps[]>([]);
+
   const sections = [
     {
       title: "Últimas transações",
       data: transactions,
     },
   ];
-  const renderSectionHeader = ({
-    section: { title },
-  }: {
-    section: SectionData;
-  }) => (
-    <View style={DashboardScreenStyles.transactionSection}>
-      <Text style={DashboardScreenStyles.titleSection}>{title}</Text>
-      <Text style={DashboardScreenStyles.redirectSection}>Ver todas</Text>
-    </View>
-  );
 
+  // 2. Lógica de busca de dados (Mantida igual)
   useEffect(() => {
     if (user) {
       getMyTransactions(user?.uid).then((transactions) =>
         setTransactions(transactions)
       );
-
       getBalance(user?.uid).then((balance) => setBalance(balance));
-
       getSummary(user?.uid).then((summary) => setSummaryList(summary));
     }
   }, [user]);
+
+  // 3. O Pulo do Gato: Header com Padding Dinâmico
+  const renderSectionHeader = ({
+    section: { title },
+  }: {
+    section: SectionData;
+  }) => (
+    <View
+      style={{
+        // backgroundColor: PRIMARY_BLUE, // Cor de fundo para "tapar" a lista rolando
+        // paddingTop: insets.top, // O espaço exato do relógio/notch
+        // Z-index garante que fique acima da lista
+        zIndex: 10,
+      }}
+    >
+      {/* O container visual branco (Seu estilo original) */}
+      <View style={DashboardScreenStyles.transactionSection}>
+        <Text style={DashboardScreenStyles.titleSection}>{title}</Text>
+        <Text style={DashboardScreenStyles.redirectSection}>Ver todas</Text>
+      </View>
+    </View>
+  );
+
   return (
     <LinearGradient
       colors={[PRIMARY_BLUE, SECONDARY_BLUE]}
@@ -78,10 +84,18 @@ const DashboardScreen: React.FC = () => {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
+      {/* Garante que o gradiente apareça atrás do relógio */}
+      <StatusBar
+        barStyle="light-content"
+        backgroundColor="transparent"
+        translucent
+      />
+
       <SectionList<ITransaction, SectionData>
         sections={sections}
+        // 4. Header da Lista com Padding para não começar escondido
         ListHeaderComponent={
-          <>
+          <View style={{ paddingTop: insets.top + 20, paddingBottom: 20 }}>
             {/* 1. HEADER E SALDO */}
             <SummaryCard
               name={userData?.name || "Usuário"}
@@ -89,19 +103,20 @@ const DashboardScreen: React.FC = () => {
             />
             {/* 2. CARTÕES FINANCEIROS */}
             <FinancialCard items={summaryList} />
-          </>
+          </View>
         }
         renderSectionHeader={renderSectionHeader}
+        // 5. Item da lista com fundo branco/gelo para continuidade
         renderItem={({ item }) => (
-          <View style={TransactionWidgetStyles.container}>
+          // Dica: Adicione backgroundColor no estilo desse container se ainda estiver transparente
+          <View style={[TransactionWidgetStyles.container]}>
             <TransactionItem transaction={item} />
           </View>
         )}
         stickySectionHeadersEnabled={true}
         keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingBottom: 80 }} // Espaço para não cortar o último item
         showsVerticalScrollIndicator={false}
-      ></SectionList>
+      />
     </LinearGradient>
   );
 };
