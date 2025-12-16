@@ -31,6 +31,7 @@ import { ITransaction } from "../../../types/transaction";
 import { formatCurrency } from "../../../utils/formatters";
 import TransactionItem from "../../../components/common/TransactionItem/TransactionItem";
 import TransactionWiget from "../../Transactions/TransactionWidget/TransactionWidget";
+import { TransactionWidgetStyles } from "../../Transactions/TransactionWidget/TransactionWidget.styles";
 
 type SectionData = {
   title: string;
@@ -48,6 +49,17 @@ const DashboardScreen: React.FC = () => {
       data: transactions,
     },
   ];
+  const renderSectionHeader = ({
+    section: { title },
+  }: {
+    section: SectionData;
+  }) => (
+    <View style={DashboardScreenStyles.transactionSection}>
+      <Text style={DashboardScreenStyles.titleSection}>{title}</Text>
+      <Text style={DashboardScreenStyles.redirectSection}>Ver todas</Text>
+    </View>
+  );
+
   useEffect(() => {
     if (user) {
       getMyTransactions(user?.uid).then((transactions) =>
@@ -59,17 +71,6 @@ const DashboardScreen: React.FC = () => {
       getSummary(user?.uid).then((summary) => setSummaryList(summary));
     }
   }, [user]);
-
-  const renderSectionHeader = ({
-    section: { title },
-  }: {
-    section: SectionData;
-  }) => (
-    <View>
-      <Text>{title}</Text>
-      <Text>Ver todas</Text>
-    </View>
-  );
   return (
     <LinearGradient
       colors={[PRIMARY_BLUE, SECONDARY_BLUE]}
@@ -91,7 +92,11 @@ const DashboardScreen: React.FC = () => {
           </>
         }
         renderSectionHeader={renderSectionHeader}
-        renderItem={({ item }) => <TransactionItem transaction={item} />}
+        renderItem={({ item }) => (
+          <View style={TransactionWidgetStyles.container}>
+            <TransactionItem transaction={item} />
+          </View>
+        )}
         stickySectionHeadersEnabled={true}
         keyExtractor={(item) => item.id}
         contentContainerStyle={{ paddingBottom: 80 }} // Espaço para não cortar o último item

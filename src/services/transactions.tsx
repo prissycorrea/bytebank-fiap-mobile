@@ -29,7 +29,9 @@ export const getMyTransactions = async (
       ...doc.data(),
     })) as ITransaction[];
 
-    return transactions;
+    return transactions.sort((a, b) =>
+      new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+    );
   } catch (error) {
     console.error("Erro ao buscar transações:", error);
     return [];
