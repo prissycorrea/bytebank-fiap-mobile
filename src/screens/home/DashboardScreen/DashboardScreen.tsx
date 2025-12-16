@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  SectionList,
 } from "react-native";
 import SafeAreaView from "react-native-safe-area-context";
 import DashboardScreenStyles from "./Dashboard.styles";
@@ -21,16 +22,32 @@ import FinancialCard, {
   FinancialCardProps,
 } from "../../../components/common/FinancialCard/FinancialCard";
 import { useAuth } from "../../../services/firebase/auth";
-import { getBalance, getMyTransactions, getSummary } from "../../../services/transactions";
+import {
+  getBalance,
+  getMyTransactions,
+  getSummary,
+} from "../../../services/transactions";
 import { ITransaction } from "../../../types/transaction";
 import { formatCurrency } from "../../../utils/formatters";
+import TransactionItem from "../../../components/common/TransactionItem/TransactionItem";
+import TransactionWiget from "../../Transactions/TransactionWidget/TransactionWidget";
+
+type SectionData = {
+  title: string;
+  data: ITransaction[];
+};
 
 const DashboardScreen: React.FC = () => {
   const { user, userData } = useAuth();
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const [balance, setBalance] = useState<number>(0);
   const [summaryList, setSummaryList] = useState<FinancialCardProps[]>([]);
-
+  const sections = [
+    {
+      title: "Últimas transações",
+      data: transactions,
+    },
+  ];
   useEffect(() => {
     if (user) {
       getMyTransactions(user?.uid).then((transactions) =>
@@ -43,6 +60,16 @@ const DashboardScreen: React.FC = () => {
     }
   }, [user]);
 
+  const renderSectionHeader = ({
+    section: { title },
+  }: {
+    section: SectionData;
+  }) => (
+    <View>
+      <Text>{title}</Text>
+      <Text>Ver todas</Text>
+    </View>
+  );
   return (
     <LinearGradient
       colors={[PRIMARY_BLUE, SECONDARY_BLUE]}
@@ -50,14 +77,26 @@ const DashboardScreen: React.FC = () => {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      {/* Garantir que o azul cubra a barra de status */}
-      {/* <SafeAreaView style={styles.headerBackground} />  */}
-      <ScrollView style={DashboardScreenStyles.container}>
-        {/* 1. HEADER E SALDO */}
-        <SummaryCard name={userData?.name || "Usuário"} balance={formatCurrency(balance)} />
-        {/* 2. CARTÕES FINANCEIROS */}
-        <FinancialCard items={summaryList} />
-      </ScrollView>
+      <SectionList<ITransaction, SectionData>
+        sections={sections}
+        ListHeaderComponent={
+          <>
+            {/* 1. HEADER E SALDO */}
+            <SummaryCard
+              name={userData?.name || "Usuário"}
+              balance={formatCurrency(balance)}
+            />
+            {/* 2. CARTÕES FINANCEIROS */}
+            <FinancialCard items={summaryList} />
+          </>
+        }
+        renderSectionHeader={renderSectionHeader}
+        renderItem={({ item }) => <TransactionItem transaction={item} />}
+        stickySectionHeadersEnabled={true}
+        keyExtractor={(item) => item.id}
+        contentContainerStyle={{ paddingBottom: 80 }} // Espaço para não cortar o último item
+        showsVerticalScrollIndicator={false}
+      ></SectionList>
     </LinearGradient>
   );
 };

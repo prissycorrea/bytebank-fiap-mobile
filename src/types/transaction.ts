@@ -3,8 +3,9 @@ export type ITransaction = {
   userId: string;
   transactionType: TransactionType;
   price: number;
-  createdAt: Date;
+  createdAt?: string;
   description?: string;
+  category: string;
 }
 
 export enum TransactionTypeEnum {

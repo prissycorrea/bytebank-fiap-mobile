@@ -5,15 +5,22 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { SummaryCardStyles } from "./SummaryCard.styles";
 import { PRIMARY_BLUE } from "../../layout/Colors";
 import { useAuth } from "../../../services/firebase/auth";
+import { createTransaction } from "../../../services/transactions";
 
 const SummaryCard: React.FC<{ name: string; balance: string }> = ({
   name,
   balance,
 }) => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
 
   const handleLogout = async () => {
-    await logout();
+    if (!user) return;
+
+    await createTransaction(user?.uid, {
+      transactionType: 'EXPENSE',
+      price: 35,
+      category: 'Compras',
+    });
   };
 
   return (
