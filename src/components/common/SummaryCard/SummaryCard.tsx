@@ -18,10 +18,9 @@ const SummaryCard: React.FC<{ name: string; balance: string }> = ({
     if (!user) return;
 
     await createTransaction(user?.uid, {
-      transactionType: "EXPENSE",
-      price: -1500,
-      category: "Casa",
-      description: "Aluguel",
+      transactionType: "INCOME",
+      price: 5320,
+      category: "Salario",
     });
   };
 

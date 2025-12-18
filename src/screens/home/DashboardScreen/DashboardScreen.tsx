@@ -7,6 +7,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import {
   PRIMARY_BLUE,
   SECONDARY_BLUE,
+  LIGHT_BLUE,
 } from "../../../utils/colors";
 import SummaryCard from "../../../components/common/SummaryCard/SummaryCard";
 import FinancialCard, {
@@ -58,7 +59,7 @@ const DashboardScreen: React.FC = () => {
 
   // 3. O Pulo do Gato: Header com Padding Dinâmico
   const renderSectionHeader = ({
-    section: { title },
+    section,
   }: {
     section: SectionData;
   }) => (
@@ -71,9 +72,20 @@ const DashboardScreen: React.FC = () => {
       }}
     >
       {/* O container visual branco (Seu estilo original) */}
-      <View style={DashboardScreenStyles.transactionSection}>
-        <Text style={DashboardScreenStyles.titleSection}>{title}</Text>
-        <Text style={DashboardScreenStyles.redirectSection}>Ver todas</Text>
+      <View
+        style={[
+          DashboardScreenStyles.transactionSection,
+          section.data.length === 0 && {
+            backgroundColor: LIGHT_BLUE,
+            borderBottomLeftRadius: 0,
+            borderBottomRightRadius: 0,
+          },
+        ]}
+      >
+        <Text style={DashboardScreenStyles.titleSection}>{section.title}</Text>
+        {section.data.length > 0 && (
+          <Text style={DashboardScreenStyles.redirectSection}>Ver todas</Text>
+        )}
       </View>
     </View>
   );
@@ -109,6 +121,27 @@ const DashboardScreen: React.FC = () => {
           </View>
         }
         renderSectionHeader={renderSectionHeader}
+        renderSectionFooter={({ section }) => {
+          if (section.data.length === 0) {
+            return (
+              <View
+                style={{
+                  backgroundColor: LIGHT_BLUE,
+                  padding: 20,
+                  alignItems: "center",
+                  borderBottomLeftRadius: 24,
+                  borderBottomRightRadius: 24,
+                  marginBottom: 24,
+                }}
+              >
+                <Text style={{ fontFamily: "Poppins_400Regular" }}>
+                  Não há transações para exibir.
+                </Text>
+              </View>
+            );
+          }
+          return <View style={{ marginBottom: 24 }} />;
+        }}
         // 5. Item da lista com fundo branco/gelo para continuidade
         renderItem={({ item }) => (
           // Dica: Adicione backgroundColor no estilo desse container se ainda estiver transparente
