@@ -1,10 +1,7 @@
 import {
-  collection,
   doc,
-  getDocs,
   getFirestore,
   increment,
-  query,
   where,
   writeBatch,
 } from "firebase/firestore";
@@ -12,6 +9,9 @@ import { firabaseConfigAuth } from "./firebase/config";
 import { ITransaction, TransactionType } from "../types/transaction";
 import { FinancialCardProps } from "../components/common/FinancialCard/FinancialCard";
 import { formatCurrency } from "../utils/formatters";
+import { stackDataItem } from "react-native-gifted-charts";
+import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { BLUE_SKY, WHITE } from "../utils/colors";
 
 const db = getFirestore(firabaseConfigAuth.app);
 const collectionRef = collection(db, "transactions");
@@ -29,8 +29,9 @@ export const getMyTransactions = async (
       ...doc.data(),
     })) as ITransaction[];
 
-    return transactions.sort((a, b) =>
-      new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
+    return transactions.sort(
+      (a, b) =>
+        new Date(b.createdAt!).getTime() - new Date(a.createdAt!).getTime()
     );
   } catch (error) {
     console.error("Erro ao buscar transações:", error);
@@ -155,6 +156,72 @@ export const getSummary = async (
     console.error("Erro ao calcular resumo financeiro:", error);
     return [];
   }
+};
+
+export const getMonthlySummaries = async (userId: string) => {
+  try {
+    // Referência para a subcoleção: users/ID_DO_USUARIO/monthly_summaries
+    const summariesRef = collection(db, "users", userId, "monthly_summaries");
+
+    // Criamos uma query para ordenar os documentos (ex: por nome do mês ou data)
+    // Se os IDs forem "2025_01", "2025_02", etc., o orderBy funcionará bem.
+    const q = query(summariesRef, orderBy("__name__", "asc"));
+
+    const querySnapshot = await getDocs(q);
+
+    // Transformando os dados do Firebase para o formato do gráfico
+    const formattedData: stackDataItem[] = querySnapshot.docs.map((doc) => {
+      const data = doc.data();
+      const docId = doc.id; // Ex: "2025_01"
+
+      // Lógica para extrair o nome do mês do ID do documento ou de um campo 'month'
+      const label = formatMonthLabel(docId);
+
+      return {
+        label: label,
+        stacks: [
+          {
+            value: data.totalExpenses || 0,
+            color: WHITE,
+            marginBottom: 2,
+            borderBottomLeftRadius: 10,
+            borderBottomRightRadius: 10,
+          },
+          {
+            value: data.totalIncome || 0,
+            color: BLUE_SKY,
+            borderTopLeftRadius: 10,
+            borderTopRightRadius: 10,
+          },
+        ],
+      };
+    });
+
+    return formattedData;
+  } catch (error) {
+    console.error("Erro ao buscar resumos no Firebase:", error);
+    return [];
+  }
+};
+
+// Função auxiliar para converter "2025_01" em "Jan"
+const formatMonthLabel = (docId: string) => {
+  const months = [
+    "Jan",
+    "Fev",
+    "Mar",
+    "Abr",
+    "Mai",
+    "Jun",
+    "Jul",
+    "Ago",
+    "Set",
+    "Out",
+    "Nov",
+    "Dez",
+  ];
+  const monthIndex = parseInt(docId.split("_")[1]) - 1;
+  return months[monthIndex] || docId;
 };
 
 // Helper para pegar o ID do mês (ex: "2025_10")

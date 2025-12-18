@@ -1,228 +1,247 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { View, Text } from "react-native";
-import { BarChart } from "react-native-gifted-charts";
+import { BarChart, stackDataItem } from "react-native-gifted-charts";
 import { BLUE_SKY, WHITE } from "../../../utils/colors";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
+import { useAuth } from "../../../services/firebase/auth";
+import { getMonthlySummaries } from "../../../services/transactions";
 
 const ChartsWidget: React.FC = () => {
   const currentMonthIndex = new Date().getMonth(); // 0 para Jan, 1 para Fev, etc.
+  const { user } = useAuth();
+  const [monthlySummaries, setMonthlySummaries] = useState<stackDataItem[]>([]);
 
-  const stackData = [
-    {
-      stacks: [
-        {
-          value: 5320,
-          color: BLUE_SKY,
-          borderTopLeftRadius: 6,
-          borderTopRightRadius: 6,
-        },
-        {
-          value: -1994,
-          color: WHITE,
-          borderBottomLeftRadius: 6,
-          borderBottomRightRadius: 6,
-        },
-      ],
-      label: "Jan",
-    },
-    {
-      stacks: [
-        {
-          value: 2320,
-          color: BLUE_SKY,
-          borderTopLeftRadius: 6,
-          borderTopRightRadius: 6,
-        },
-        {
-          value: -3744,
-          color: WHITE,
-          borderBottomLeftRadius: 6,
-          borderBottomRightRadius: 6,
-        },
-      ],
-      label: "Fev",
-    },
-    {
-      stacks: [
-        {
-          value: 2320,
-          color: BLUE_SKY,
-          borderTopLeftRadius: 6,
-          borderTopRightRadius: 6,
-        },
-        {
-          value: -3744,
-          color: WHITE,
-          borderBottomLeftRadius: 6,
-          borderBottomRightRadius: 6,
-        },
-      ],
-      label: "Mar",
-    },
-    {
-      stacks: [
-        {
-          value: 2320,
-          color: BLUE_SKY,
-          borderTopLeftRadius: 6,
-          borderTopRightRadius: 6,
-        },
-        {
-          value: -3744,
-          color: WHITE,
-          borderBottomLeftRadius: 6,
-          borderBottomRightRadius: 6,
-        },
-      ],
-      label: "Abr",
-    },
-    {
-      stacks: [
-        {
-          value: 2320,
-          color: BLUE_SKY,
-          borderTopLeftRadius: 6,
-          borderTopRightRadius: 6,
-        },
-        {
-          value: -3744,
-          color: WHITE,
-          borderBottomLeftRadius: 6,
-          borderBottomRightRadius: 6,
-        },
-      ],
-      label: "Mai",
-    },
-    {
-      stacks: [
-        {
-          value: 2320,
-          color: BLUE_SKY,
-          borderTopLeftRadius: 6,
-          borderTopRightRadius: 6,
-        },
-        {
-          value: -3744,
-          color: WHITE,
-          borderBottomLeftRadius: 6,
-          borderBottomRightRadius: 6,
-        },
-      ],
-      label: "Jun",
-    },
-    {
-      stacks: [
-        {
-          value: 2320,
-          color: BLUE_SKY,
-          borderTopLeftRadius: 6,
-          borderTopRightRadius: 6,
-        },
-        {
-          value: -3744,
-          color: WHITE,
-          borderBottomLeftRadius: 6,
-          borderBottomRightRadius: 6,
-        },
-      ],
-      label: "Jul",
-    },
-    {
-      stacks: [
-        {
-          value: 2320,
-          color: BLUE_SKY,
-          borderTopLeftRadius: 6,
-          borderTopRightRadius: 6,
-        },
-        {
-          value: -3744,
-          color: WHITE,
-          borderBottomLeftRadius: 6,
-          borderBottomRightRadius: 6,
-        },
-      ],
-      label: "Ago",
-    },
-    {
-      stacks: [
-        {
-          value: 2320,
-          color: BLUE_SKY,
-          borderTopLeftRadius: 6,
-          borderTopRightRadius: 6,
-        },
-        {
-          value: -3744,
-          color: WHITE,
-          borderBottomLeftRadius: 6,
-          borderBottomRightRadius: 6,
-        },
-      ],
-      label: "Set",
-    },
-    {
-      stacks: [
-        {
-          value: 2320,
-          color: BLUE_SKY,
-          borderTopLeftRadius: 6,
-          borderTopRightRadius: 6,
-        },
-        {
-          value: -3744,
-          color: WHITE,
-          borderBottomLeftRadius: 6,
-          borderBottomRightRadius: 6,
-        },
-      ],
-      label: "Out",
-    },
-    {
-      stacks: [
-        {
-          value: 2320,
-          color: BLUE_SKY,
-          borderTopLeftRadius: 6,
-          borderTopRightRadius: 6,
-        },
-        {
-          value: -3744,
-          color: WHITE,
-          borderBottomLeftRadius: 6,
-          borderBottomRightRadius: 6,
-        },
-      ],
-      label: "Nov",
-    },
-    {
-      stacks: [
-        {
-          value: 2320,
-          color: BLUE_SKY,
-          borderTopLeftRadius: 6,
-          borderTopRightRadius: 6,
-        },
-        {
-          value: -3744,
-          color: WHITE,
-          borderBottomLeftRadius: 6,
-          borderBottomRightRadius: 6,
-        },
-      ],
-      label: "Dez",
-    },
-  ].map((item, index) => ({
-    ...item,
-    labelTextStyle:
-      index === currentMonthIndex
-        ? {
-            color: BLUE_SKY,
-            fontWeight: "bold",
-            marginLeft: -18,
-            textAlign: "center",
-          } // Destaque para o mês atual
-        : undefined,
-  }));
+  useEffect(() => {
+    if (user) {
+      getMonthlySummaries(user?.uid).then((monthlySummaries) => {
+        console.log(JSON.stringify(monthlySummaries, null, 2));
+        
+        
+        setMonthlySummaries(
+          monthlySummaries.map((item, index) => ({
+            ...item,
+            labelTextStyle:
+              index === currentMonthIndex
+                ? {
+                    color: BLUE_SKY,
+                    fontWeight: "bold",
+                    marginLeft: -18,
+                    textAlign: "center",
+                  } // Destaque para o mês atual
+                : undefined,
+          }))
+        )
+      }
+      );
+    }
+  }, [user]);
+
+//   const stackData = [
+//     {
+//       stacks: [
+//         {
+//           value: 5320,
+//           color: BLUE_SKY,
+//           borderTopLeftRadius: 6,
+//           borderTopRightRadius: 6,
+//         },
+//         {
+//           value: -1994,
+//           color: WHITE,
+//           borderBottomLeftRadius: 6,
+//           borderBottomRightRadius: 6,
+//         },
+//       ],
+//       label: "Jan",
+//     },
+//     {
+//       stacks: [
+//         {
+//           value: 2320,
+//           color: BLUE_SKY,
+//           borderTopLeftRadius: 6,
+//           borderTopRightRadius: 6,
+//         },
+//         {
+//           value: -3744,
+//           color: WHITE,
+//           borderBottomLeftRadius: 6,
+//           borderBottomRightRadius: 6,
+//         },
+//       ],
+//       label: "Fev",
+//     },
+//     {
+//       stacks: [
+//         {
+//           value: 2320,
+//           color: BLUE_SKY,
+//           borderTopLeftRadius: 6,
+//           borderTopRightRadius: 6,
+//         },
+//         {
+//           value: -3744,
+//           color: WHITE,
+//           borderBottomLeftRadius: 6,
+//           borderBottomRightRadius: 6,
+//         },
+//       ],
+//       label: "Mar",
+//     },
+//     {
+//       stacks: [
+//         {
+//           value: 2320,
+//           color: BLUE_SKY,
+//           borderTopLeftRadius: 6,
+//           borderTopRightRadius: 6,
+//         },
+//         {
+//           value: -3744,
+//           color: WHITE,
+//           borderBottomLeftRadius: 6,
+//           borderBottomRightRadius: 6,
+//         },
+//       ],
+//       label: "Abr",
+//     },
+//     {
+//       stacks: [
+//         {
+//           value: 2320,
+//           color: BLUE_SKY,
+//           borderTopLeftRadius: 6,
+//           borderTopRightRadius: 6,
+//         },
+//         {
+//           value: -3744,
+//           color: WHITE,
+//           borderBottomLeftRadius: 6,
+//           borderBottomRightRadius: 6,
+//         },
+//       ],
+//       label: "Mai",
+//     },
+//     {
+//       stacks: [
+//         {
+//           value: 2320,
+//           color: BLUE_SKY,
+//           borderTopLeftRadius: 6,
+//           borderTopRightRadius: 6,
+//         },
+//         {
+//           value: -3744,
+//           color: WHITE,
+//           borderBottomLeftRadius: 6,
+//           borderBottomRightRadius: 6,
+//         },
+//       ],
+//       label: "Jun",
+//     },
+//     {
+//       stacks: [
+//         {
+//           value: 2320,
+//           color: BLUE_SKY,
+//           borderTopLeftRadius: 6,
+//           borderTopRightRadius: 6,
+//         },
+//         {
+//           value: -3744,
+//           color: WHITE,
+//           borderBottomLeftRadius: 6,
+//           borderBottomRightRadius: 6,
+//         },
+//       ],
+//       label: "Jul",
+//     },
+//     {
+//       stacks: [
+//         {
+//           value: 2320,
+//           color: BLUE_SKY,
+//           borderTopLeftRadius: 6,
+//           borderTopRightRadius: 6,
+//         },
+//         {
+//           value: -3744,
+//           color: WHITE,
+//           borderBottomLeftRadius: 6,
+//           borderBottomRightRadius: 6,
+//         },
+//       ],
+//       label: "Ago",
+//     },
+//     {
+//       stacks: [
+//         {
+//           value: 2320,
+//           color: BLUE_SKY,
+//           borderTopLeftRadius: 6,
+//           borderTopRightRadius: 6,
+//         },
+//         {
+//           value: -3744,
+//           color: WHITE,
+//           borderBottomLeftRadius: 6,
+//           borderBottomRightRadius: 6,
+//         },
+//       ],
+//       label: "Set",
+//     },
+//     {
+//       stacks: [
+//         {
+//           value: 2320,
+//           color: BLUE_SKY,
+//           borderTopLeftRadius: 6,
+//           borderTopRightRadius: 6,
+//         },
+//         {
+//           value: -3744,
+//           color: WHITE,
+//           borderBottomLeftRadius: 6,
+//           borderBottomRightRadius: 6,
+//         },
+//       ],
+//       label: "Out",
+//     },
+//     {
+//       stacks: [
+//         {
+//           value: 2320,
+//           color: BLUE_SKY,
+//           borderTopLeftRadius: 6,
+//           borderTopRightRadius: 6,
+//         },
+//         {
+//           value: -3744,
+//           color: WHITE,
+//           borderBottomLeftRadius: 6,
+//           borderBottomRightRadius: 6,
+//         },
+//       ],
+//       label: "Nov",
+//     },
+//     {
+//       stacks: [
+//         {
+//           value: 2320,
+//           color: BLUE_SKY,
+//           borderTopLeftRadius: 6,
+//           borderTopRightRadius: 6,
+//         },
+//         {
+//           value: -3744,
+//           color: WHITE,
+//           borderBottomLeftRadius: 6,
+//           borderBottomRightRadius: 6,
+//         },
+//       ],
+//       label: "Dez",
+//     },
+//   ];
 
   const renderLegend = (color: string, label: string) => (
     <View
@@ -246,7 +265,7 @@ const ChartsWidget: React.FC = () => {
   );
 
   return (
-    <View style={{ marginBlockEnd: 30}}>
+    <View style={{ marginBlockEnd: 30 }}>
       <View
         style={{
           flexDirection: "row",
@@ -263,7 +282,7 @@ const ChartsWidget: React.FC = () => {
         barWidth={9}
         spacing={40}
         noOfSections={4}
-        stackData={stackData}
+        stackData={monthlySummaries}
         hideRules
         hideYAxisText
         yAxisThickness={0}
