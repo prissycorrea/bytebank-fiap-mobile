@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { GRAY_DARK, LIGHT_BLUE } from "../../../components/layout/Colors";
+import { GRAY_DARK, LIGHT_BLUE } from "../../../utils/colors";
 
 const DashboardScreenStyles = StyleSheet.create({
   container: {

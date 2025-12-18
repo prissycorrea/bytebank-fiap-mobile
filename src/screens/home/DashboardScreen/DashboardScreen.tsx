@@ -7,7 +7,7 @@ import { LinearGradient } from "expo-linear-gradient";
 import {
   PRIMARY_BLUE,
   SECONDARY_BLUE,
-} from "../../../components/layout/Colors";
+} from "../../../utils/colors";
 import SummaryCard from "../../../components/common/SummaryCard/SummaryCard";
 import FinancialCard, {
   FinancialCardProps,
@@ -22,6 +22,7 @@ import { ITransaction } from "../../../types/transaction";
 import { formatCurrency } from "../../../utils/formatters";
 import TransactionItem from "../../../components/common/TransactionItem/TransactionItem";
 import { TransactionWidgetStyles } from "../../Transactions/TransactionWidget/TransactionWidget.styles";
+import ChartsWidget from "../../../components/layout/Charts/ChartsWidget";
 
 type SectionData = {
   title: string;
@@ -101,6 +102,8 @@ const DashboardScreen: React.FC = () => {
               name={userData?.name || "Usuário"}
               balance={formatCurrency(balance)}
             />
+            {/* 2. GRAFICO MENSAL */}
+            <ChartsWidget />
             {/* 2. CARTÕES FINANCEIROS */}
             <FinancialCard items={summaryList} />
           </View>

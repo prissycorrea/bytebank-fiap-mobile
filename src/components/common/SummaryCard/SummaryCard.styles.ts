@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { GRAY_DARK, LIGHT_BLUE, PRIMARY_BLUE, SECONDARY_BLUE, SUCCESS, WHITE } from "../../layout/Colors";
+import { GRAY_DARK, LIGHT_BLUE, PRIMARY_BLUE, SECONDARY_BLUE, SUCCESS, WHITE } from "../../../utils/colors";
 
 export const SummaryCardStyles = StyleSheet.create({
   headerContainer: {

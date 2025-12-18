@@ -1,4 +1,4 @@
-import { BLACK, BLUE_SKY, GRAY_LIGHT, LIGHT_BLUE, LIGHT_BLUE_TRANSPARENT, LIGHTER_BLUE, SUCCESS, WHITE } from "../../layout/Colors";
+import { BLACK, BLUE_SKY, GRAY_LIGHT, LIGHT_BLUE, LIGHT_BLUE_TRANSPARENT, LIGHTER_BLUE, SUCCESS, WHITE } from "../../../utils/colors";
 import { Dimensions } from "react-native";
 
 const { width } = Dimensions.get("window");

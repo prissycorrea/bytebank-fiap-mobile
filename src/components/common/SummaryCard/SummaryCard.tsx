@@ -3,7 +3,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { MaterialIcons } from "@expo/vector-icons";
 import { SummaryCardStyles } from "./SummaryCard.styles";
-import { PRIMARY_BLUE } from "../../layout/Colors";
+import { PRIMARY_BLUE } from "../../../utils/colors";
 import { useAuth } from "../../../services/firebase/auth";
 import { createTransaction } from "../../../services/transactions";
 import { formatCurrency } from "../../../utils/formatters";

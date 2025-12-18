@@ -5,7 +5,7 @@ import {
   GRAY_LIGHT,
   SUCCESS,
   WHITE,
-} from "../../layout/Colors";
+} from "../../../utils/colors";
 
 export const TransactionItemStyles = StyleSheet.create({
   container: {
