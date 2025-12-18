@@ -6,21 +6,22 @@ import { SummaryCardStyles } from "./SummaryCard.styles";
 import { PRIMARY_BLUE } from "../../layout/Colors";
 import { useAuth } from "../../../services/firebase/auth";
 import { createTransaction } from "../../../services/transactions";
+import { formatCurrency } from "../../../utils/formatters";
 
 const SummaryCard: React.FC<{ name: string; balance: string }> = ({
   name,
   balance,
 }) => {
-  const { logout, user } = useAuth();
+  const { logout, user, userData } = useAuth();
 
   const handleLogout = async () => {
     if (!user) return;
 
     await createTransaction(user?.uid, {
-      transactionType: 'INCOME',
-      price: 9450,
-      category: 'Salário',
-      description: 'Salário mensal'
+      transactionType: "EXPENSE",
+      price: -1500,
+      category: "Casa",
+      description: "Aluguel",
     });
   };
 
@@ -38,9 +39,7 @@ const SummaryCard: React.FC<{ name: string; balance: string }> = ({
               style={SummaryCardStyles.headerAvatarIcon}
             />
           </View>
-          <Text style={SummaryCardStyles.headerGreeting}>
-            Oi, {name}!
-          </Text>
+          <Text style={SummaryCardStyles.headerGreeting}>Oi, {name}!</Text>
         </View>
       </View>
 
@@ -48,7 +47,7 @@ const SummaryCard: React.FC<{ name: string; balance: string }> = ({
         <View>
           <Text style={SummaryCardStyles.headerBalanceLabel}>Saldo atual</Text>
           <Text style={SummaryCardStyles.headerBalanceValue}>
-            {balance}
+            {formatCurrency(userData!.balance, true)}
           </Text>
         </View>
         {/* Botão Extrato */}

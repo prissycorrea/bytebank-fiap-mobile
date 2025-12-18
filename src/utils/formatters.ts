@@ -1,11 +1,7 @@
 export function formatCurrency(
   value: number,
-  isNegative: boolean = false,
   withSymbol: boolean = true
 ): string {
-  if (isNegative) {
-    value = value * -1;
-  }
 
   return value.toLocaleString("pt-BR", {
     style: withSymbol ? "currency" : "decimal",

@@ -37,7 +37,7 @@ const TransactionItem: React.FC<{ transaction: ITransaction }> = ({
         </Text>
         <Text style={TransactionItemStyles.date}>{formatDate(formattedDate)}</Text>
       </View>
-      <Text style={TransactionItemStyles.price}>{formatCurrency(transaction.price, !isIncome, false)}</Text>
+      <Text style={TransactionItemStyles.price}>{formatCurrency(transaction.price, false)}</Text>
     </View>
   );
 };

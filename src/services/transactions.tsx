@@ -88,7 +88,7 @@ export const createTransaction = async (
       summaryRef,
       {
         monthId: monthId, // Útil para ordenação depois
-        [fieldToUpdate]: increment(Math.abs(newTransaction.price)), // Somamos sempre positivo aqui para exibição
+        [fieldToUpdate]: increment(newTransaction.price), // Mantemos o sinal original (negativo para despesas)
       },
       { merge: true }
     );
