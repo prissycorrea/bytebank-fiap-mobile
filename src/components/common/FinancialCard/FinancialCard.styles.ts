@@ -9,7 +9,7 @@ const SLIDE_WIDTH = width / 2.5;
 
 export const FinancialCardStyles = {
   container: {
-    paddingInlineStart: 16,
+    paddingInlineStart: 24,
   },
   card: {
     flex: 1,

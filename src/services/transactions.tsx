@@ -148,7 +148,7 @@ export const getSummary = async (
       },
       {
         type: "balance",
-        label: "Saldo",
+        label: "Balanço",
         value: formatCurrency(balance),
       },
     ];

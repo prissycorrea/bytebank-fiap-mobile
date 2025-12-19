@@ -43,7 +43,7 @@ const FinancialCard: React.FC<{ items: FinancialCardProps[] }> = ({ items }) => 
         showsHorizontalScrollIndicator={false} // Oculta a barra de rolagem
         // onMomentumScrollEnd={(event) => { /* Opcional: Lógica para saber em qual slide parou */ }}
         // ---------------------------------------------
-        contentContainerStyle={{ gap: 16, paddingInlineEnd: 16 }} // Espaçamento entre os cards
+        contentContainerStyle={{ gap: 16, paddingInlineEnd: 24 }} // Espaçamento entre os cards
       />
     </View>
   );

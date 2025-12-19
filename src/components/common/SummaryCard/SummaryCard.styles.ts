@@ -1,11 +1,10 @@
 import { StyleSheet } from "react-native";
-import { GRAY_DARK, LIGHT_BLUE, PRIMARY_BLUE, SECONDARY_BLUE, SUCCESS, WHITE } from "../../../utils/colors";
+import { GRAY_DARK, GRAY_LIGHT, LIGHT_BLUE, PRIMARY_BLUE, SECONDARY_BLUE, SUCCESS, WHITE } from "../../../utils/colors";
 
 export const SummaryCardStyles = StyleSheet.create({
   headerContainer: {
     // backgroundColor: PRIMARY_BLUE,
-    padding: 30,
-    paddingBlock: 40,
+    padding: 24,
   },
   headerRow: {
     flexDirection: "row",
@@ -36,7 +35,7 @@ export const SummaryCardStyles = StyleSheet.create({
     fontSize: 30,
     fontWeight: "400",
     color: WHITE,
-    marginLeft: 10,
+    marginLeft: 15,
   },
   headerStatementButton: {
     flexDirection: "row",
@@ -52,7 +51,7 @@ export const SummaryCardStyles = StyleSheet.create({
     marginRight: 10,
   },
   headerBalanceLabel: {
-    color: GRAY_DARK,
+    color: GRAY_LIGHT,
     fontSize: 14,
   },
   headerBalanceValue: {
