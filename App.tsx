@@ -17,8 +17,9 @@ import {
   WorkSans_600SemiBold,
   WorkSans_700Bold,
 } from "@expo-google-fonts/work-sans";
-import DashboardScreen from "./src/screens/home/DashboardScreen/DashboardScreen";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { NavigationContainer } from "@react-navigation/native";
+import { TabNavigator } from "./src/navigation/TabNavigator";
 
 const AppContent: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -59,7 +60,11 @@ const AppContent: React.FC = () => {
 
   // 2. Se o usuário já está logado, vai direto pro Dashboard (Mudei a ordem para priorizar o login)
   if (isAuthenticated) {
-    return <DashboardScreen />;
+    return (
+      <NavigationContainer>
+        <TabNavigator />
+      </NavigationContainer>
+    );
   }
 
   // 3. Se não está logado, verifica fluxo de Auth vs Onboarding
