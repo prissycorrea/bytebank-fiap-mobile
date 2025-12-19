@@ -58,17 +58,15 @@ const DashboardScreen: React.FC = () => {
   }, [user]);
 
   // 3. O Pulo do Gato: Header com Padding Dinâmico
-  const renderSectionHeader = ({
-    section,
-  }: {
-    section: SectionData;
-  }) => (
+  const renderSectionHeader = ({ section }: { section: SectionData }) => (
     <View
       style={{
-        // backgroundColor: PRIMARY_BLUE, // Cor de fundo para "tapar" a lista rolando
-        // paddingTop: insets.top, // O espaço exato do relógio/notch
+        backgroundColor: LIGHT_BLUE, // Cor de fundo para "tapar" a lista rolando
+        paddingTop: 1, // O espaço exato do relógio/notch
+        borderTopRightRadius: 28,
+        borderTopLeftRadius: 28,
         // Z-index garante que fique acima da lista
-        zIndex: 10,
+        // zIndex: 10,
       }}
     >
       {/* O container visual branco (Seu estilo original) */}
@@ -106,6 +104,9 @@ const DashboardScreen: React.FC = () => {
 
       <SectionList<ITransaction, SectionData>
         sections={sections}
+        // contentContainerStyle={{
+        //   backgroundColor: LIGHT_BLUE, // Ou a cor exata do fundo das suas transações
+        // }}
         // 4. Header da Lista com Padding para não começar escondido
         ListHeaderComponent={
           <View style={{ paddingTop: insets.top + 20, paddingBottom: 20 }}>
@@ -140,7 +141,7 @@ const DashboardScreen: React.FC = () => {
               </View>
             );
           }
-          return <View style={{ marginBottom: 24 }} />;
+          return <View style={{ paddingBlock: 45, backgroundColor: LIGHT_BLUE}}></View>;
         }}
         // 5. Item da lista com fundo branco/gelo para continuidade
         renderItem={({ item }) => (

@@ -16,6 +16,9 @@ const DashboardScreenStyles = StyleSheet.create({
     borderTopEndRadius: 28,
     backgroundColor: LIGHT_BLUE,
     marginTop: -1,
+    borderBottomWidth: 0, // <--- Força a remoção de qualquer linha
+    elevation: 0, // <--- Remove sombra no Android
+    shadowOpacity: 0, // <--- Remove sombra no iOS
   },
   titleSection: {
     fontSize: 16,
