@@ -1,43 +1,49 @@
-import React, { useState, useEffect } from 'react';
-import { useFonts } from 'expo-font';
-import { SplashScreen } from './src/screens/splash';
-import { OnboardingScreen } from './src/screens/onboarding';
-import { LoginScreen, RegisterScreen, SuccessScreen } from './src/screens/auth';
-import { DashboardScreen } from './src/screens/home';
-import { AuthProvider, useAuth } from './src/services/firebase/auth';
+import React, { useState, useEffect } from "react";
+import { useFonts } from "expo-font"; // <--- 1. IMPORTANTE: Adicione isso
+
+import { SplashScreen } from "./src/screens/splash";
+import { OnboardingScreen } from "./src/screens/onboarding";
+import { LoginScreen, RegisterScreen, SuccessScreen } from "./src/screens/auth";
+import { AuthProvider, useAuth } from "./src/services/firebase/auth";
 import {
   Poppins_400Regular,
   Poppins_500Medium,
   Poppins_600SemiBold,
   Poppins_700Bold,
-} from '@expo-google-fonts/poppins';
+} from "@expo-google-fonts/poppins";
 import {
   WorkSans_400Regular,
   WorkSans_500Medium,
   WorkSans_600SemiBold,
   WorkSans_700Bold,
-} from '@expo-google-fonts/work-sans';
+} from "@expo-google-fonts/work-sans";
+import { SafeAreaProvider } from "react-native-safe-area-context";
+import { NavigationContainer } from "@react-navigation/native";
+import { TabNavigator } from "./src/navigation/TabNavigator";
 
 const AppContent: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
+
   const { isAuthenticated, loading: authLoading } = useAuth();
+
   const [fontsLoaded] = useFonts({
-    'Poppins': Poppins_400Regular,
-    'Poppins_500Medium': Poppins_500Medium,
-    'Poppins_600SemiBold': Poppins_600SemiBold,
-    'Poppins_700Bold': Poppins_700Bold,
-    'WorkSans_400Regular': WorkSans_400Regular,
-    'WorkSans_500Medium': WorkSans_500Medium,
-    'WorkSans_600SemiBold': WorkSans_600SemiBold,
-    'WorkSans_700Bold': WorkSans_700Bold,
+    Poppins: Poppins_400Regular,
+    Poppins_500Medium: Poppins_500Medium,
+    Poppins_600SemiBold: Poppins_600SemiBold,
+    Poppins_700Bold: Poppins_700Bold,
+    WorkSans_400Regular: WorkSans_400Regular,
+    WorkSans_500Medium: WorkSans_500Medium,
+    WorkSans_600SemiBold: WorkSans_600SemiBold,
+    WorkSans_700Bold: WorkSans_700Bold,
   });
 
   useEffect(() => {
     if (fontsLoaded) {
       const timer = setTimeout(() => {
         setShowSplash(false);
-      }, 3000); // 3 segundos
+      }, 3000);
 
       return () => clearTimeout(timer);
     }
@@ -47,28 +53,42 @@ const AppContent: React.FC = () => {
     setOnboardingComplete(true);
   };
 
+  // 1. Splash e Carregamento (Prioridade Máxima)
   if (!fontsLoaded || showSplash || authLoading) {
     return <SplashScreen />;
   }
 
-  // Se o usuário estiver autenticado, vai direto para o Dashboard
+  // 2. Se o usuário já está logado, vai direto pro Dashboard (Mudei a ordem para priorizar o login)
   if (isAuthenticated) {
-    return <DashboardScreen />;
+    return (
+      <NavigationContainer>
+        <TabNavigator />
+      </NavigationContainer>
+    );
   }
 
-  // Se o onboarding estiver completo, mostra a tela de login
+  // 3. Se não está logado, verifica fluxo de Auth vs Onboarding
   if (onboardingComplete) {
-    return <LoginScreen />;
+    if (isRegistering) {
+      return <RegisterScreen onBackToLogin={() => setIsRegistering(false)} />;
+    }
+    return <LoginScreen onRegister={() => setIsRegistering(true)} />;
   }
 
-  // Caso contrário, mostra o onboarding
+  // Esse bloco aqui embaixo era redundante com o de cima, pode simplificar assim:
+  // Se chegou aqui, não está autenticado e não completou onboarding (ou completou e caiu no if acima)
+
+  // 4. Caso contrário, mostra o onboarding
   return <OnboardingScreen onComplete={handleOnboardingComplete} />;
 };
 
 export default function App() {
   return (
-    <AuthProvider>
-      <AppContent />
-    </AuthProvider>
+    // <--- 2. IMPORTANTE: Envolva tudo com o SafeAreaProvider
+    <SafeAreaProvider>
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
+    </SafeAreaProvider>
   );
 }

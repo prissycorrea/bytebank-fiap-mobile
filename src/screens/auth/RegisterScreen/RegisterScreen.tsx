@@ -16,7 +16,6 @@ import { Feather } from '@expo/vector-icons';
 import { styles } from './RegisterScreen.styles';
 import { useAuth } from '../../../services/firebase/auth';
 import { SuccessScreen } from '../SuccessScreen';
-import { LoginScreen } from '../LoginScreen';
 
 const EyeIcon: React.FC<{ visible: boolean }> = ({ visible }) => (
   <Feather
@@ -39,7 +38,6 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onBackToLogin })
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showSuccess, setShowSuccess] = useState(false);
-  const [showLogin, setShowLogin] = useState(false);
 
   const { signUp } = useAuth();
 
@@ -77,7 +75,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onBackToLogin })
 
     setLoading(true);
 
-    const result = await signUp(email, password);
+    const result = await signUp({name: fullName,email, password});
     
     if (result.success) {
       setShowSuccess(true);
@@ -97,10 +95,6 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onBackToLogin })
   const toggleConfirmPasswordVisibility = () => {
     setShowConfirmPassword(!showConfirmPassword);
   };
-
-  if (showLogin) {
-    return <LoginScreen />;
-  }
 
   if (showSuccess) {
     return <SuccessScreen />;
@@ -214,11 +208,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onBackToLogin })
               <Text 
                 style={styles.footerLink}
                 onPress={() => {
-                  if (onBackToLogin) {
-                    onBackToLogin();
-                  } else {
-                    setShowLogin(true);
-                  }
+                  onBackToLogin?.();
                 }}
               >
                 Acesse aqui
@@ -231,4 +221,3 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onBackToLogin })
     </SafeAreaView>
   );
 };
-

@@ -1,72 +1,34 @@
-import { StyleSheet } from 'react-native';
-import { normalize } from '../../../utils';
+import { StyleSheet } from "react-native";
+import { GRAY_DARK, LIGHT_BLUE } from "../../../utils/colors";
 
-export const styles = StyleSheet.create({
+const DashboardScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#DDEBF8',
   },
-  scrollContent: {
-    flexGrow: 1,
-    paddingHorizontal: normalize(24),
-    paddingVertical: normalize(20),
+  transactionSection: {
+    display: "flex",
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 25,
+    marginBlockStart: 25,
+    borderTopStartRadius: 28,
+    borderTopEndRadius: 28,
+    backgroundColor: LIGHT_BLUE,
+    marginTop: -1,
+    borderBottomWidth: 0, // <--- Força a remoção de qualquer linha
+    elevation: 0, // <--- Remove sombra no Android
+    shadowOpacity: 0, // <--- Remove sombra no iOS
   },
-  header: {
-    marginBottom: normalize(30),
-    alignItems: 'center',
+  titleSection: {
+    fontSize: 16,
+    fontWeight: "900",
+    color: GRAY_DARK,
   },
-  title: {
-    fontSize: normalize(28),
-    fontFamily: 'WorkSans_700Bold',
-    fontWeight: 'bold',
-    color: '#0F2C59',
-    marginBottom: normalize(10),
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: normalize(16),
-    fontFamily: 'Poppins_400Regular',
-    color: '#666',
-    textAlign: 'center',
-  },
-  content: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  welcomeText: {
-    fontSize: normalize(18),
-    fontFamily: 'Poppins_400Regular',
-    color: '#0F2C59',
-    textAlign: 'center',
-  },
-  footer: {
-    marginTop: normalize(40),
-    alignItems: 'center',
-    paddingBottom: normalize(20),
-  },
-  logoutButton: {
-    width: '100%',
-    maxWidth: normalize(200),
-    height: normalize(48),
-    backgroundColor: '#FF6B6B',
-    borderRadius: normalize(50),
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#FF6B6B',
-    shadowOffset: {
-      width: 0,
-      height: normalize(4),
-    },
-    shadowOpacity: 0.3,
-    shadowRadius: normalize(4.65),
-    elevation: normalize(8),
-  },
-  logoutButtonText: {
-    fontSize: normalize(14),
-    fontWeight: 'bold',
-    fontFamily: 'Poppins_600SemiBold',
-    color: '#FFFFFF',
+  redirectSection: {
+    fontSize: 12,
+    letterSpacing: 1.5,
   },
 });
 
+export default DashboardScreenStyles;
