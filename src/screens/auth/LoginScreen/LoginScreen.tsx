@@ -8,13 +8,13 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
 import { styles } from './LoginScreen.styles';
 import { useAuth } from '../../../services/firebase/auth';
+import { useSnackbar } from '../../../contexts/SnackbarContext';
 
 const EyeIcon: React.FC<{ visible: boolean }> = ({ visible }) => (
   <Feather
@@ -35,21 +35,22 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onRegister }) => {
   const [loading, setLoading] = useState(false);
 
   const { login } = useAuth();
+  const { showSnackbar } = useSnackbar();
 
   const handleLogin = async () => {
     if (!email.trim()) {
-      Alert.alert('Erro', 'Por favor, informe seu e-mail.');
+      showSnackbar('Por favor, informe seu e-mail.', 'error');
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      Alert.alert('Erro', 'Por favor, informe um e-mail válido.');
+      showSnackbar('Por favor, informe um e-mail válido.', 'error');
       return;
     }
 
     if (!password) {
-      Alert.alert('Erro', 'Por favor, informe sua senha.');
+      showSnackbar('Por favor, informe sua senha.', 'error');
       return;
     }
 
@@ -58,9 +59,9 @@ export const LoginScreen: React.FC<LoginScreenProps> = ({ onRegister }) => {
     const result = await login({email, password});
     
     if (!result.success) {
-      Alert.alert(
-        'Erro',
-        result.error || 'E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.'
+      showSnackbar(
+        result.error || 'E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.',
+        'error'
       );
       setLoading(false);
     }
