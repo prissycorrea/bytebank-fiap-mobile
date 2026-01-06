@@ -2,6 +2,9 @@ export function formatCurrency(
   value: number,
   withSymbol: boolean = true
 ): string {
+  if (value === undefined || value === null) {
+    return withSymbol ? "R$ 0,00" : "0,00";
+  }
 
   return value.toLocaleString("pt-BR", {
     style: withSymbol ? "currency" : "decimal",

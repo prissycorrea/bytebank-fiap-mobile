@@ -5,7 +5,7 @@ import {
   where,
   writeBatch,
 } from "firebase/firestore";
-import { firabaseConfigAuth } from "./firebase/config";
+import { firebaseConfigAuth } from "./firebase/config";
 import { ITransaction, TransactionType } from "../types/transaction";
 import { FinancialCardProps } from "../components/common/FinancialCard/FinancialCard";
 import { formatCurrency } from "../utils/formatters";
@@ -13,7 +13,7 @@ import { stackDataItem } from "react-native-gifted-charts";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { BLUE_SKY, WHITE } from "../utils/colors";
 
-const db = getFirestore(firabaseConfigAuth.app);
+const db = getFirestore(firebaseConfigAuth.app);
 const collectionRef = collection(db, "transactions");
 
 export const getMyTransactions = async (
