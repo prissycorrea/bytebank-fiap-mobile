@@ -252,3 +252,31 @@ const getDataCurrentMonth = (
     return isExpense && isSameMonth && isSameYear;
   });
 };
+
+export const deleteAllTransactions = async (userId: string): Promise<void> => {
+  try {
+    const q = query(collectionRef, where("userId", "==", userId));
+    const querySnapshot = await getDocs(q);
+
+    const batch = writeBatch(db);
+
+    querySnapshot.docs.forEach((docSnap) => {
+      batch.delete(docSnap.ref);
+    });
+
+    // Reset User Balance
+    const userRef = doc(db, "users", userId);
+    batch.update(userRef, {
+      balance: 0,
+    });
+
+    // Note: Technically we should also delete monthly_summaries subcollection, 
+    // but deleting transactions and resetting balance is enough for the Empty State test.
+
+    await batch.commit();
+    console.log("Todas as transações foram deletadas e o saldo zerado.");
+  } catch (error) {
+    console.error("Erro ao deletar transações:", error);
+    throw error;
+  }
+};

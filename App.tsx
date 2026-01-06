@@ -20,13 +20,15 @@ import {
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { TabNavigator } from "./src/navigation/TabNavigator";
+import { AppNavigator } from "./src/navigation/AppNavigator";
+import { getMyTransactions } from "./src/services/transactions";
 
 const AppContent: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
   const [onboardingComplete, setOnboardingComplete] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
 
-  const { isAuthenticated, loading: authLoading } = useAuth();
+  const { isAuthenticated, loading: authLoading, user } = useAuth();
 
   const [fontsLoaded] = useFonts({
     Poppins: Poppins_400Regular,
@@ -54,15 +56,61 @@ const AppContent: React.FC = () => {
   };
 
   // 1. Splash e Carregamento (Prioridade Máxima)
-  if (!fontsLoaded || showSplash || authLoading) {
+  const [checkingTransactions, setCheckingTransactions] = useState(false);
+  const [initialRoute, setInitialRoute] = useState("MainTabs");
+
+  // Novo efeito para verificar transações quando o usuário estiver autenticado
+  useEffect(() => {
+    if (isAuthenticated && !authLoading) { // Só verifica se terminou o loading do auth
+      setCheckingTransactions(true);
+      // Assumindo que useAuth fornece o uid no user object
+      // useAuth retorna { user, ... }
+      // Precisamos pegar o user do hook useAuth, que já foi chamado lá em cima
+      // const { user } = useAuth(); // Já chamado na linha 29
+      // Mas user pode ser null se isAuthenticated for false, mas aqui checamos isAuthenticated.
+      // Typescript pode reclamar, então checamos user.
+      // O hook useAuth retorna user como User | null.
+
+      // CORREÇÃO: O user do hook é pego na linha 29, mas precisamos garantir que ele esteja atualizado.
+      // Como isAuthenticated é true, user deve existir.
+
+      // Pequeno detalhe: getMyTransactions precisa do UID.
+      // Vou usar uma função async dentro do effect.
+      const checkData = async () => {
+        try {
+          // user pode ser null aqui se o state ainda não atualizou, mas isAuthenticated diz que sim.
+          // Vamos dar um bypass seguro.
+          // Na verdade, useAuth já retornou o user.
+          // Mas para garantir, vamos pegar o user atual do contexto ou confiar na var user.
+          // Vamos usar a variavel user do escopo do componente.
+          if (user?.uid) {
+            const transactions = await getMyTransactions(user.uid);
+            if (transactions.length === 0) {
+              setInitialRoute("EmptyState");
+            } else {
+              setInitialRoute("MainTabs");
+            }
+          }
+        } catch (error) {
+          console.log("Erro ao buscar transações iniciais", error);
+        } finally {
+          setCheckingTransactions(false);
+        }
+      };
+      checkData();
+    }
+  }, [isAuthenticated, authLoading, user]);
+
+
+  if (!fontsLoaded || showSplash || authLoading || checkingTransactions) {
     return <SplashScreen />;
   }
 
-  // 2. Se o usuário já está logado, vai direto pro Dashboard (Mudei a ordem para priorizar o login)
+  // 2. Se o usuário já está logado, vai direto pro Dashboard (via AppNavigator)
   if (isAuthenticated) {
     return (
       <NavigationContainer>
-        <TabNavigator />
+        <AppNavigator initialRouteName={initialRoute} />
       </NavigationContainer>
     );
   }
