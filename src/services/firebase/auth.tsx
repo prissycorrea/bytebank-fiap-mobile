@@ -13,7 +13,7 @@ import {
   useState,
 } from "react";
 import { getFirestore, doc, setDoc, getDoc } from "firebase/firestore";
-import { firabaseConfigAuth } from "./config";
+import { firebaseConfigAuth } from "./config";
 import { IUser } from '../../types/user';
 
 interface IAuthContext {
@@ -43,12 +43,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(firabaseConfigAuth, async (_user) => {
+    const unsubscribe = onAuthStateChanged(firebaseConfigAuth, async (_user) => {
       setUser(_user);
 
       if (_user) {
         try {
-          const db = getFirestore(firabaseConfigAuth.app);
+          const db = getFirestore(firebaseConfigAuth.app);
           const docRef = doc(db, 'users', _user.uid);
           const docSnap = await getDoc(docRef);
 
@@ -69,7 +69,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = async (user: Omit<IUser, 'name'>) => {
     try {
-      await signInWithEmailAndPassword(firabaseConfigAuth, user.email, user.password);
+      await signInWithEmailAndPassword(firebaseConfigAuth, user.email, user.password);
       console.log("AuthProvider :: login - usuário logado com sucesso");
       return { success: true };
     } catch (error: any) {
@@ -117,17 +117,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             errorMessage = "E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.";
         }
       }
-      
+
       return { success: false, error: errorMessage };
     }
   };
 
   const signUp = async (userData: IUser) => {
     try {
-      const userCredential = await createUserWithEmailAndPassword(firabaseConfigAuth, userData.email, userData.password);
+      const userCredential = await createUserWithEmailAndPassword(firebaseConfigAuth, userData.email, userData.password);
       const uid = userCredential.user.uid;
 
-      const db = getFirestore(firabaseConfigAuth.app);
+      const db = getFirestore(firebaseConfigAuth.app);
 
       await setDoc(doc(db, 'users', uid), {
         name: userData.name,
@@ -139,9 +139,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return { success: true };
     } catch (error: any) {
       console.log("AuthProvider :: signUp - falha", error);
-      
+
       let errorMessage = "Não foi possível criar sua conta. Tente novamente mais tarde.";
-      
+
       if (error?.code) {
         switch (error.code) {
           case "auth/email-already-in-use":
@@ -163,14 +163,14 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             errorMessage = `Erro ao criar conta: ${error.message || "Erro desconhecido"}`;
         }
       }
-      
+
       return { success: false, error: errorMessage };
     }
   };
 
   const logout = async () => {
     try {
-      await signOut(firabaseConfigAuth);
+      await signOut(firebaseConfigAuth);
       console.log("AuthProvider :: logout - usuário deslogado com sucesso");
     } catch (error) {
       console.log("AuthProvider :: logout - erro ao deslogar", error);

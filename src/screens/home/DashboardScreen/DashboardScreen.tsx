@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { View, Text, SectionList, StatusBar } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+
 import DashboardScreenStyles from "./Dashboard.styles";
 import { LinearGradient } from "expo-linear-gradient";
 import {
@@ -24,6 +25,7 @@ import { formatCurrency } from "../../../utils/formatters";
 import TransactionItem from "../../../components/common/TransactionItem/TransactionItem";
 import { TransactionWidgetStyles } from "../../Transactions/TransactionWidget/TransactionWidget.styles";
 import ChartsWidget from "../../../components/layout/Charts/ChartsWidget";
+
 
 type SectionData = {
   title: string;
@@ -57,6 +59,18 @@ const DashboardScreen: React.FC = () => {
     }
   }, [user]);
 
+
+
+
+
+  if (!user) {
+    return <View style={{ flex: 1, backgroundColor: PRIMARY_BLUE }} />; // Loading state simples
+  }
+
+  // Se não houver transações e já tiver carregado (assumindo que empty array + user logado = vazio)
+  // Idealmente teríamos um loading state explícito, mas usando transactions.length === 0 por enquanto
+
+
   // 3. O Pulo do Gato: Header com Padding Dinâmico
   const renderSectionHeader = ({ section }: { section: SectionData }) => (
     <View
@@ -65,11 +79,8 @@ const DashboardScreen: React.FC = () => {
         paddingTop: 1, // O espaço exato do relógio/notch
         borderTopRightRadius: 28,
         borderTopLeftRadius: 28,
-        // Z-index garante que fique acima da lista
-        // zIndex: 10,
       }}
     >
-      {/* O container visual branco (Seu estilo original) */}
       <View
         style={[
           DashboardScreenStyles.transactionSection,
@@ -95,7 +106,6 @@ const DashboardScreen: React.FC = () => {
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
     >
-      {/* Garante que o gradiente apareça atrás do relógio */}
       <StatusBar
         barStyle="light-content"
         backgroundColor="transparent"
@@ -104,10 +114,6 @@ const DashboardScreen: React.FC = () => {
 
       <SectionList<ITransaction, SectionData>
         sections={sections}
-        // contentContainerStyle={{
-        //   backgroundColor: LIGHT_BLUE, // Ou a cor exata do fundo das suas transações
-        // }}
-        // 4. Header da Lista com Padding para não começar escondido
         ListHeaderComponent={
           <View style={{ paddingTop: insets.top + 20, paddingBottom: 20 }}>
             {/* 1. HEADER E SALDO */}
@@ -141,11 +147,10 @@ const DashboardScreen: React.FC = () => {
               </View>
             );
           }
-          return <View style={{ paddingBlock: 45, backgroundColor: LIGHT_BLUE}}></View>;
+          return <View style={{ paddingBottom: 45, backgroundColor: LIGHT_BLUE }}></View>;
         }}
         // 5. Item da lista com fundo branco/gelo para continuidade
         renderItem={({ item }) => (
-          // Dica: Adicione backgroundColor no estilo desse container se ainda estiver transparente
           <View style={[TransactionWidgetStyles.container]}>
             <TransactionItem transaction={item} />
           </View>

@@ -1,4 +1,4 @@
-export const PRIMARY_BLUE = "#001C36"; // Fundo azul escuro
+export const PRIMARY_BLUE = "#0F2C59"; // Fundo azul escuro
 export const SECONDARY_BLUE = "#003689"; // Azul claro para botões e realces
 export const LIGHT_BLUE = "#DDEBF8"; // Azul muito claro para fundos secundários
 export const LIGHTER_BLUE = "#B1C9E0"; // Azul quase branco para fundos
