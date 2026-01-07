@@ -13,7 +13,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Feather } from '@expo/vector-icons';
-import { styles } from './RegisterScreen.styles';
+import { RegisterScreenStyles } from './RegisterScreen.styles';
 import { useAuth } from '../../../services/firebase/auth';
 import { SuccessScreen } from '../SuccessScreen';
 
@@ -101,32 +101,32 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onBackToLogin })
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={RegisterScreenStyles.container}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        style={styles.keyboardView}
+        style={RegisterScreenStyles.keyboardView}
       >
         <ScrollView
-          contentContainerStyle={styles.scrollContent}
-          style={styles.scrollView}
+          contentContainerStyle={RegisterScreenStyles.scrollContent}
+          style={RegisterScreenStyles.scrollView}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-        <View style={styles.header}>
+        <View style={RegisterScreenStyles.header}>
           <Image
             source={require('../../../../assets/images/logo_positivo.png')}
-            style={styles.logo}
+            style={RegisterScreenStyles.logo}
             resizeMode="contain"
           />
         </View>
 
-        <View style={styles.content}>
-          <Text style={styles.title}>Cadastre-se</Text>
+        <View style={RegisterScreenStyles.content}>
+          <Text style={RegisterScreenStyles.title}>Cadastre-se</Text>
 
-          <View style={styles.form}>
-            <View style={styles.inputContainer}>
+          <View style={RegisterScreenStyles.form}>
+            <View style={RegisterScreenStyles.inputContainer}>
               <TextInput
-                style={styles.input}
+                style={RegisterScreenStyles.input}
                 placeholder="Nome completo"
                 placeholderTextColor="#999"
                 value={fullName}
@@ -135,9 +135,9 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onBackToLogin })
               />
             </View>
 
-            <View style={styles.inputContainer}>
+            <View style={RegisterScreenStyles.inputContainer}>
               <TextInput
-                style={styles.input}
+                style={RegisterScreenStyles.input}
                 placeholder="Endereço de e-mail"
                 placeholderTextColor="#999"
                 value={email}
@@ -148,9 +148,9 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onBackToLogin })
               />
             </View>
 
-            <View style={styles.inputContainer}>
+            <View style={RegisterScreenStyles.inputContainer}>
               <TextInput
-                style={styles.input}
+                style={RegisterScreenStyles.input}
                 placeholder="Senha"
                 placeholderTextColor="#999"
                 value={password}
@@ -160,7 +160,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onBackToLogin })
                 autoCorrect={false}
               />
               <TouchableOpacity
-                style={styles.eyeIconButton}
+                style={RegisterScreenStyles.eyeIconButton}
                 onPress={togglePasswordVisibility}
                 activeOpacity={0.7}
               >
@@ -168,9 +168,9 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onBackToLogin })
               </TouchableOpacity>
             </View>
 
-            <View style={styles.inputContainer}>
+            <View style={RegisterScreenStyles.inputContainer}>
               <TextInput
-                style={styles.input}
+                style={RegisterScreenStyles.input}
                 placeholder="Confirmar senha"
                 placeholderTextColor="#999"
                 value={confirmPassword}
@@ -180,7 +180,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onBackToLogin })
                 autoCorrect={false}
               />
               <TouchableOpacity
-                style={styles.eyeIconButton}
+                style={RegisterScreenStyles.eyeIconButton}
                 onPress={toggleConfirmPasswordVisibility}
                 activeOpacity={0.7}
               >
@@ -189,7 +189,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onBackToLogin })
             </View>
 
             <TouchableOpacity
-              style={[styles.registerButton, loading && styles.registerButtonDisabled]}
+              style={[RegisterScreenStyles.registerButton, loading && RegisterScreenStyles.registerButtonDisabled]}
               onPress={handleRegister}
               activeOpacity={0.8}
               disabled={loading}
@@ -197,16 +197,16 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onBackToLogin })
               {loading ? (
                 <ActivityIndicator color="#FFF" />
               ) : (
-                <Text style={styles.registerButtonText}>Cadastrar</Text>
+                <Text style={RegisterScreenStyles.registerButtonText}>Cadastrar</Text>
               )}
             </TouchableOpacity>
           </View>
 
-          <View style={styles.footer}>
-            <Text style={styles.footerText}>
+          <View style={RegisterScreenStyles.footer}>
+            <Text style={RegisterScreenStyles.footerText}>
               Já possui uma conta?{' '}
               <Text 
-                style={styles.footerLink}
+                style={RegisterScreenStyles.footerLink}
                 onPress={() => {
                   onBackToLogin?.();
                 }}

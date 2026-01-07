@@ -15,6 +15,7 @@ import FinancialCard, {
 } from "../../../components/common/FinancialCard/FinancialCard";
 import { useAuth } from "../../../services/firebase/auth";
 import {
+  generateCategoriesList,
   getBalance,
   getMyTransactions,
   getSummary,

@@ -3,7 +3,7 @@ import { normalize } from '../../../utils';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
-export const styles = StyleSheet.create({
+export const RegisterScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#DDEBF8',

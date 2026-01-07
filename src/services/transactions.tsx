@@ -1,4 +1,5 @@
 import {
+  addDoc,
   doc,
   getFirestore,
   increment,
@@ -15,6 +16,28 @@ import { BLUE_SKY, WHITE } from "../utils/colors";
 
 const db = getFirestore(firabaseConfigAuth.app);
 const collectionRef = collection(db, "transactions");
+const categoriasParaSubir = [
+  { nome: "Alimentação", busca: "alimentacao" },
+  { nome: "Aluguel", busca: "aluguel" },
+  { nome: "Assinaturas e Serviços", busca: "assinaturas e servicos" },
+  { nome: "Casa", busca: "casa" },
+  { nome: "Compras", busca: "compras" },
+  { nome: "Cuidados Pessoais", busca: "cuidados pessoais" },
+  { nome: "Educação", busca: "educacao" },
+  { nome: "Empréstimos", busca: "emprestimos" },
+  { nome: "Entretenimento", busca: "entretenimento" },
+  { nome: "Esportes", busca: "esportes" },
+  { nome: "Investimentos", busca: "investimentos" },
+  { nome: "Lazer", busca: "lazer" },
+  { nome: "Mercado", busca: "mercado" },
+  { nome: "Outros", busca: "outros" },
+  { nome: "Presentes", busca: "presentes" },
+  { nome: "Salário", busca: "salario" },
+  { nome: "Saúde", busca: "saude" },
+  { nome: "Trabalho Extra", busca: "trabalho extra" },
+  { nome: "Transporte", busca: "transporte" },
+  { nome: "Viagens", busca: "viagens" },
+];
 
 export const getMyTransactions = async (
   userId: string
@@ -201,6 +224,18 @@ export const getMonthlySummaries = async (userId: string) => {
   } catch (error) {
     console.error("Erro ao buscar resumos no Firebase:", error);
     return [];
+  }
+};
+
+export const generateCategoriesList = async () => {
+  try {
+    const colRef = collection(db, "categories");
+    for (const cat of categoriasParaSubir) {
+      await addDoc(colRef, cat);
+    }
+    alert("Categorias adicionadas!");
+  } catch (e) {
+    console.error("Erro ao subir dados: ", e);
   }
 };
 
