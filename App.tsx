@@ -20,6 +20,7 @@ import {
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { NavigationContainer } from "@react-navigation/native";
 import { TabNavigator } from "./src/navigation/TabNavigator";
+import { SnackbarProvider } from "./src/contexts/SnackbarContext";
 
 const AppContent: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -87,7 +88,9 @@ export default function App() {
     // <--- 2. IMPORTANTE: Envolva tudo com o SafeAreaProvider
     <SafeAreaProvider>
       <AuthProvider>
-        <AppContent />
+        <SnackbarProvider>
+          <AppContent />
+        </SnackbarProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );

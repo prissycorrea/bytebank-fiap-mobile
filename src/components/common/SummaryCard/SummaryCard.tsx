@@ -1,5 +1,5 @@
-import React from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import React, { useState } from "react";
+import { Text, TouchableOpacity, View, Modal } from "react-native";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { MaterialIcons } from "@expo/vector-icons";
 import { SummaryCardStyles } from "./SummaryCard.styles";
@@ -13,6 +13,7 @@ const SummaryCard: React.FC<{ name: string; balance: string }> = ({
   balance,
 }) => {
   const { logout, user, userData } = useAuth();
+  const [showMenu, setShowMenu] = useState(false);
 
   const handleLogout = async () => {
     if (!user) return;
@@ -24,29 +25,63 @@ const SummaryCard: React.FC<{ name: string; balance: string }> = ({
     });
   };
 
+  const handleLogoutPress = () => {
+    setShowMenu(false);
+    logout();
+  };
+
   return (
     <View style={SummaryCardStyles.headerContainer}>
       <View style={SummaryCardStyles.headerRow}>
         <View style={SummaryCardStyles.headerProfile}>
           {/* Ícone de Usuário */}
           {/* <MaterialIcons name="account-circle" size={40} color="#fff" /> */}
-          <View style={SummaryCardStyles.headerAvatar}>
+          <TouchableOpacity 
+            style={SummaryCardStyles.headerAvatar}
+            onPress={() => setShowMenu(true)}
+          >
             <FontAwesome6
               name="user"
               size={24}
               color="black"
               style={SummaryCardStyles.headerAvatarIcon}
             />
-          </View>
+          </TouchableOpacity>
           <Text style={SummaryCardStyles.headerGreeting}>Oi, {name}!</Text>
         </View>
       </View>
+
+      <Modal
+        visible={showMenu}
+        transparent={true}
+        animationType="fade"
+        onRequestClose={() => setShowMenu(false)}
+      >
+        <TouchableOpacity
+          style={SummaryCardStyles.modalOverlay}
+          activeOpacity={1}
+          onPress={() => setShowMenu(false)}
+        >
+          <View 
+            style={SummaryCardStyles.menuContainer}
+            onStartShouldSetResponder={() => true}
+          >
+            <TouchableOpacity
+              style={SummaryCardStyles.menuItem}
+              onPress={handleLogoutPress}
+            >
+              <MaterialIcons name="logout" size={24} color={PRIMARY_BLUE} />
+              <Text style={SummaryCardStyles.menuItemText}>Sair</Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
 
       <View style={SummaryCardStyles.headerRow}>
         <View>
           <Text style={SummaryCardStyles.headerBalanceLabel}>Saldo atual</Text>
           <Text style={SummaryCardStyles.headerBalanceValue}>
-            {formatCurrency(userData!.balance, true)}
+            {formatCurrency(userData?.balance ?? 0, true)}
           </Text>
         </View>
         {/* Botão Extrato */}
