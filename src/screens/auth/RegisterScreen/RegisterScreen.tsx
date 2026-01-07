@@ -8,7 +8,6 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Alert,
   ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,6 +15,7 @@ import { Feather } from '@expo/vector-icons';
 import { styles } from './RegisterScreen.styles';
 import { useAuth } from '../../../services/firebase/auth';
 import { SuccessScreen } from '../SuccessScreen';
+import { useSnackbar } from '../../../contexts/SnackbarContext';
 
 const EyeIcon: React.FC<{ visible: boolean }> = ({ visible }) => (
   <Feather
@@ -40,36 +40,37 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onBackToLogin })
   const [showSuccess, setShowSuccess] = useState(false);
 
   const { signUp } = useAuth();
+  const { showSnackbar } = useSnackbar();
 
   const handleRegister = async () => {
     if (!fullName.trim()) {
-      Alert.alert('Erro', 'Por favor, informe seu nome completo.');
+      showSnackbar('Por favor, informe seu nome completo.', 'error');
       return;
     }
 
     if (!email.trim()) {
-      Alert.alert('Erro', 'Por favor, informe seu e-mail.');
+      showSnackbar('Por favor, informe seu e-mail.', 'error');
       return;
     }
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
-      Alert.alert('Erro', 'Por favor, informe um e-mail válido.');
+      showSnackbar('Por favor, informe um e-mail válido.', 'error');
       return;
     }
 
     if (!password) {
-      Alert.alert('Erro', 'Por favor, informe uma senha.');
+      showSnackbar('Por favor, informe uma senha.', 'error');
       return;
     }
 
     if (password.length < 6) {
-      Alert.alert('Erro', 'A senha deve ter no mínimo 6 caracteres.');
+      showSnackbar('A senha deve ter no mínimo 6 caracteres.', 'error');
       return;
     }
 
     if (password !== confirmPassword) {
-      Alert.alert('Erro', 'As senhas não coincidem.');
+      showSnackbar('As senhas não coincidem.', 'error');
       return;
     }
 
@@ -80,9 +81,9 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onBackToLogin })
     if (result.success) {
       setShowSuccess(true);
     } else {
-      Alert.alert(
-        'Erro',
-        result.error || 'Não foi possível criar sua conta. Tente novamente mais tarde.'
+      showSnackbar(
+        result.error || 'Não foi possível criar sua conta. Tente novamente mais tarde.',
+        'error'
       );
       setLoading(false);
     }

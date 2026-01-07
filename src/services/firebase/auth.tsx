@@ -74,13 +74,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       return { success: true };
     } catch (error: any) {
       console.log("AuthProvider :: login - falha ao logar usuário", error);
+      console.log("AuthProvider :: login - código do erro:", error?.code);
+      console.log("AuthProvider :: login - mensagem do erro:", error?.message);
 
       let errorMessage = "E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.";
 
-      if (error?.code) {
-        switch (error.code) {
+      // Tenta pegar o código do erro de diferentes formas
+      const errorCode = error?.code || error?.errorCode || (error?.message?.includes('auth/') ? error.message.split('auth/')[1]?.split(')')[0] : null);
+      const errorMessageText = error?.message || '';
+
+      // Verifica se a mensagem contém indicações de usuário não encontrado
+      if (errorMessageText.toLowerCase().includes('user-not-found') || 
+          errorMessageText.toLowerCase().includes('there is no user record')) {
+        errorMessage = "Este e-mail não está cadastrado. Que tal criar uma conta? Clique em 'Cadastre-se' abaixo.";
+      } else if (errorCode) {
+        const normalizedCode = errorCode.startsWith('auth/') ? errorCode : `auth/${errorCode}`;
+        
+        switch (normalizedCode) {
           case "auth/user-not-found":
-            errorMessage = "E-mail não encontrado. Verifique se o e-mail está correto ou cadastre-se.";
+            errorMessage = "Este e-mail não está cadastrado. Que tal criar uma conta? Clique em 'Cadastre-se' abaixo.";
             break;
           case "auth/wrong-password":
             errorMessage = "Senha incorreta. Tente novamente.";
@@ -97,8 +109,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           case "auth/too-many-requests":
             errorMessage = "Muitas tentativas de login. Tente novamente mais tarde.";
             break;
+          case "auth/invalid-credential":
+            errorMessage = "E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.";
+            break;
           default:
-            errorMessage = `Erro ao fazer login: ${error.message || "Erro desconhecido"}`;
+            // Se não reconhecer o código, usa mensagem genérica amigável
+            errorMessage = "E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.";
         }
       }
 

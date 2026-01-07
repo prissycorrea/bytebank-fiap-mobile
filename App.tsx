@@ -22,6 +22,7 @@ import { NavigationContainer } from "@react-navigation/native";
 import { TabNavigator } from "./src/navigation/TabNavigator";
 import { AppNavigator } from "./src/navigation/AppNavigator";
 import { getMyTransactions } from "./src/services/transactions";
+import { SnackbarProvider } from "./src/contexts/SnackbarContext";
 
 const AppContent: React.FC = () => {
   const [showSplash, setShowSplash] = useState(true);
@@ -135,7 +136,9 @@ export default function App() {
     // <--- 2. IMPORTANTE: Envolva tudo com o SafeAreaProvider
     <SafeAreaProvider>
       <AuthProvider>
-        <AppContent />
+        <SnackbarProvider>
+          <AppContent />
+        </SnackbarProvider>
       </AuthProvider>
     </SafeAreaProvider>
   );
