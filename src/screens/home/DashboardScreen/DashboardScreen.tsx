@@ -29,7 +29,7 @@ import TransactionItem from "../../../components/common/TransactionItem/Transact
 import { TransactionWidgetStyles } from "../../Transactions/TransactionWidget/TransactionWidget.styles";
 import ChartsWidget from "../../../components/layout/Charts/ChartsWidget";
 import { getUserInfo } from "../../../services/users";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 type SectionData = {
   title: string;
@@ -46,6 +46,7 @@ const DashboardScreen: React.FC = () => {
   const [name, setName] = useState<string>("Usuário");
   const [summaryList, setSummaryList] = useState<FinancialCardProps[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const navigation = useNavigation();
 
   const sections = [
     {
@@ -122,11 +123,16 @@ const DashboardScreen: React.FC = () => {
       >
         <Text style={DashboardScreenStyles.titleSection}>{section.title}</Text>
         {section.data.length > 0 && (
-          <Text style={DashboardScreenStyles.redirectSection}>Ver todas</Text>
+          <Text style={DashboardScreenStyles.redirectSection} onPress={onToGoExtrato}>Ver todas</Text>
         )}
       </View>
     </View>
   );
+
+  const onToGoExtrato = () => {
+    navigation.navigate("Transactions" as never);
+  }
+
 
   return (
     <LinearGradient

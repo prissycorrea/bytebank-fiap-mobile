@@ -13,6 +13,7 @@ import { formatCurrency } from "../utils/formatters";
 import { stackDataItem } from "react-native-gifted-charts";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { BLUE_SKY, WHITE } from "../utils/colors";
+import { getUserInfo } from "./users";
 
 const db = getFirestore(firabaseConfigAuth.app);
 const collectionRef = collection(db, "transactions");
@@ -128,21 +129,6 @@ export const createTransaction = async (
   }
 };
 
-export const getBalance = async (userId: string): Promise<number> => {
-  try {
-    const transactions = await getMyTransactions(userId);
-    const balance = transactions.reduce((acc, transaction) => {
-      return transaction.transactionType === "INCOME"
-        ? acc + transaction.price
-        : acc - transaction.price;
-    }, 0);
-    return balance;
-  } catch (error) {
-    console.error("Erro ao calcular saldo:", error);
-    return 0;
-  }
-};
-
 export const getSummary = async (
   userId: string
 ): Promise<FinancialCardProps[]> => {
@@ -156,7 +142,7 @@ export const getSummary = async (
       (acc, transaction) => acc + transaction.price,
       0
     );
-    const balance = await getBalance(userId);
+    const balance = await getUserInfo(userId);
 
     return [
       {
@@ -172,7 +158,7 @@ export const getSummary = async (
       {
         type: "balance",
         label: "Balanço",
-        value: formatCurrency(balance),
+        value: formatCurrency(balance?.balance || 0),
       },
     ];
   } catch (error) {
