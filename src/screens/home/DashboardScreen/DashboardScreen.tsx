@@ -21,19 +21,15 @@ import FinancialCard, {
 } from "../../../components/common/FinancialCard/FinancialCard";
 import { useAuth } from "../../../services/firebase/auth";
 import {
-  generateCategoriesList,
-  getBalance,
   getMyTransactions,
   getSummary,
 } from "../../../services/transactions";
 import { ITransaction } from "../../../types/transaction";
-import { formatCurrency } from "../../../utils/formatters";
 import TransactionItem from "../../../components/common/TransactionItem/TransactionItem";
 import { TransactionWidgetStyles } from "../../Transactions/TransactionWidget/TransactionWidget.styles";
 import ChartsWidget from "../../../components/layout/Charts/ChartsWidget";
 import { getUserInfo } from "../../../services/users";
 import { useFocusEffect } from "@react-navigation/native";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 type SectionData = {
   title: string;
@@ -171,10 +167,7 @@ const DashboardScreen: React.FC = () => {
           </View>
         }
         renderSectionHeader={renderSectionHeader}
-        renderSectionFooter={({ section }) => {
-          if (section.data.length === 0) {
-            return (
-              <View
+        ListEmptyComponent={<View
                 style={{
                   backgroundColor: LIGHT_BLUE,
                   padding: 20,
@@ -187,15 +180,7 @@ const DashboardScreen: React.FC = () => {
                 <Text style={{ fontFamily: "Poppins_400Regular" }}>
                   Não há transações para exibir.
                 </Text>
-              </View>
-            );
-          }
-          return (
-            <View
-              style={{ paddingBlock: 45, backgroundColor: LIGHT_BLUE }}
-            ></View>
-          );
-        }}
+              </View>}
         // 5. Item da lista com fundo branco/gelo para continuidade
         renderItem={({ item }) => (
           // Dica: Adicione backgroundColor no estilo desse container se ainda estiver transparente
