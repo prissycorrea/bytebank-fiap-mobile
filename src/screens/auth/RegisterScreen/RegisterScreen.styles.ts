@@ -100,6 +100,28 @@ export const RegisterScreenStyles = StyleSheet.create({
     shadowRadius: normalize(4.65),
     elevation: normalize(8),
   },
+  registerButtonOutline: {
+    width: '100%',
+    height: normalize(56),
+    maxWidth: normalize(306),
+    // backgroundColor: '#009BE9', // Azul brilhante
+    borderRadius: normalize(50),
+    color: '#0F2C59',
+    borderColor: '#0F2C59',
+    borderWidth: 2,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: normalize(10),
+    alignSelf: 'center',
+    // shadowColor: '#009BE9',
+    // shadowOffset: {
+    //   width: 0,
+    //   height: normalize(4),
+    // },
+    shadowOpacity: 0.3,
+    shadowRadius: normalize(4.65),
+    // elevation: normalize(8),
+  },
   registerButtonDisabled: {
     opacity: 0.6,
   },
@@ -108,6 +130,12 @@ export const RegisterScreenStyles = StyleSheet.create({
     fontWeight: 'bold',
     fontFamily: 'Poppins_600SemiBold',
     color: '#FFFFFF',
+  },
+  registerButtonOutlineText: {
+    fontSize: normalize(14),
+    fontWeight: 'bold',
+    fontFamily: 'Poppins_600SemiBold',
+    color: '#0F2C59',
   },
   footer: {
     marginTop: normalize(60),

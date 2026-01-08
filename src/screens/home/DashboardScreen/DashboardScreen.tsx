@@ -1,5 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, SectionList, StatusBar } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  SectionList,
+  StatusBar,
+  RefreshControl,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import DashboardScreenStyles from "./Dashboard.styles";
@@ -25,6 +31,7 @@ import { formatCurrency } from "../../../utils/formatters";
 import TransactionItem from "../../../components/common/TransactionItem/TransactionItem";
 import { TransactionWidgetStyles } from "../../Transactions/TransactionWidget/TransactionWidget.styles";
 import ChartsWidget from "../../../components/layout/Charts/ChartsWidget";
+import { getUserInfo } from "../../../services/users";
 
 type SectionData = {
   title: string;
@@ -35,10 +42,12 @@ const DashboardScreen: React.FC = () => {
   // 1. Hook para pegar a altura da barra de status (ex: 47px no iPhone)
   const insets = useSafeAreaInsets();
 
-  const { user, userData } = useAuth();
+  const { user } = useAuth();
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const [balance, setBalance] = useState<number>(0);
+  const [name, setName] = useState<string>("Usuário");
   const [summaryList, setSummaryList] = useState<FinancialCardProps[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
 
   const sections = [
     {
@@ -47,14 +56,37 @@ const DashboardScreen: React.FC = () => {
     },
   ];
 
+  const onRefresh = useCallback(async () => {
+    if (!user) return;
+
+    setRefreshing(true);
+
+    try {
+      // Executa todas as buscas em paralelo
+      await Promise.all([
+        getMyTransactions(user.uid).then(setTransactions),
+        getSummary(user.uid).then(setSummaryList),
+        getUserInfo(user.uid).then((userData) => {
+          setBalance(userData?.balance || 0);
+          setName(userData?.name || "Usuário");
+        }),
+      ]);
+    } catch (error) {
+      console.error("Erro ao atualizar dados:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [user]);
+
   // 2. Lógica de busca de dados (Mantida igual)
   useEffect(() => {
     if (user) {
-      getMyTransactions(user?.uid).then((transactions) =>
-        setTransactions(transactions)
-      );
-      getBalance(user?.uid).then((balance) => setBalance(balance));
-      getSummary(user?.uid).then((summary) => setSummaryList(summary));
+      getMyTransactions(user.uid).then(setTransactions);
+      getSummary(user.uid).then(setSummaryList);
+      getUserInfo(user.uid).then((userData) => {
+        setBalance(userData?.balance || 0);
+        setName(userData?.name || "Usuário");
+      });
     }
   }, [user]);
 
@@ -105,6 +137,14 @@ const DashboardScreen: React.FC = () => {
 
       <SectionList<ITransaction, SectionData>
         sections={sections}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#FFF" // Cor do spinner no iOS
+            colors={[PRIMARY_BLUE]} // Cor do spinner no Android
+          />
+        }
         // contentContainerStyle={{
         //   backgroundColor: LIGHT_BLUE, // Ou a cor exata do fundo das suas transações
         // }}
@@ -112,10 +152,7 @@ const DashboardScreen: React.FC = () => {
         ListHeaderComponent={
           <View style={{ paddingTop: insets.top + 20, paddingBottom: 20 }}>
             {/* 1. HEADER E SALDO */}
-            <SummaryCard
-              name={userData?.name || "Usuário"}
-              balance={formatCurrency(balance)}
-            />
+            <SummaryCard name={name} balance={balance} />
             {/* 2. GRAFICO MENSAL */}
             <ChartsWidget />
             {/* 2. CARTÕES FINANCEIROS */}
@@ -142,7 +179,11 @@ const DashboardScreen: React.FC = () => {
               </View>
             );
           }
-          return <View style={{ paddingBlock: 45, backgroundColor: LIGHT_BLUE}}></View>;
+          return (
+            <View
+              style={{ paddingBlock: 45, backgroundColor: LIGHT_BLUE }}
+            ></View>
+          );
         }}
         // 5. Item da lista com fundo branco/gelo para continuidade
         renderItem={({ item }) => (

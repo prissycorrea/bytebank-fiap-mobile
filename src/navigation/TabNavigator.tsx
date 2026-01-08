@@ -13,6 +13,7 @@ import {
   WHITE,
 } from "../utils/colors";
 import TransactionCreate from "../screens/Transactions/TransactionCreate/TransactionCreate";
+import TransactionList from "../screens/Transactions/TransactionList/TransactionList";
 
 const Tab = createBottomTabNavigator();
 const Placeholder = () => (
@@ -85,8 +86,8 @@ export const TabNavigator = () => {
       />
 
       <Tab.Screen
-        name="Exchange"
-        component={Placeholder}
+        name="Transactions"
+        component={TransactionList}
         options={({ navigation }: any) => ({
           headerShown: true,
           headerTitle: "Transações",

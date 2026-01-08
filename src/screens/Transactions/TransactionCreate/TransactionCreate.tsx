@@ -38,7 +38,7 @@ const TransactionCreate: React.FC = () => {
       // Lógica de criação da transação aqui
       createTransaction(user!.uid, {
         transactionType: transactionType,
-        price: parseFloat(price),
+        price: transactionType === "INCOME" ? parseFloat(price) : -parseFloat(price),
         description,
         category: categoriaSelecionada
       });
@@ -66,7 +66,6 @@ const TransactionCreate: React.FC = () => {
   });
 
   const salvarCategoria = (categoria: any) => {
-    console.log("Recebido do filho:", categoria);
     setCategoriaSelecionada(categoria); // Agora o pai tem o dado!
   };
 

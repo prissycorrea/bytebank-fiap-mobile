@@ -8,11 +8,11 @@ import { useAuth } from "../../../services/firebase/auth";
 import { createTransaction } from "../../../services/transactions";
 import { formatCurrency } from "../../../utils/formatters";
 
-const SummaryCard: React.FC<{ name: string; balance: string }> = ({
+const SummaryCard: React.FC<{ name: string; balance: number }> = ({
   name,
   balance,
 }) => {
-  const { logout, user, userData } = useAuth();
+  const { logout, user } = useAuth();
 
   const handleLogout = async () => {
     if (!user) return;
@@ -46,7 +46,7 @@ const SummaryCard: React.FC<{ name: string; balance: string }> = ({
         <View>
           <Text style={SummaryCardStyles.headerBalanceLabel}>Saldo atual</Text>
           <Text style={SummaryCardStyles.headerBalanceValue}>
-            {formatCurrency(userData!.balance, true)}
+            {formatCurrency(balance, true)}
           </Text>
         </View>
         {/* Botão Extrato */}
