@@ -89,12 +89,20 @@ const TransactionCreate: React.FC = () => {
     }
   };
 
+  const resetForm = () => {
+    setPrice("");
+    setDescription("");
+    setCategoriaSelecionada(null);
+    setTransactionType("INCOME");
+    setIsSuccess(false); // Isso faz o formulário reaparecer
+  };
+
   // Se estiver em modo de sucesso, renderiza a SuccessScreen
   if (isSuccess) {
     return (
       <SuccessScreen
         successProps={{ title: "Sucesso!" }}
-        onAddMore={() => setIsSuccess(false)} // Reseta isSuccess e o useFocusEffect limpa o resto
+        onAddMore={resetForm} // Reseta isSuccess e o useFocusEffect limpa o resto
         onGoHome={() => navigation.navigate("Home" as never)}
       />
     );
