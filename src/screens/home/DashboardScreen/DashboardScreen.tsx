@@ -32,6 +32,8 @@ import TransactionItem from "../../../components/common/TransactionItem/Transact
 import { TransactionWidgetStyles } from "../../Transactions/TransactionWidget/TransactionWidget.styles";
 import ChartsWidget from "../../../components/layout/Charts/ChartsWidget";
 import { getUserInfo } from "../../../services/users";
+import { useFocusEffect } from "@react-navigation/native";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 type SectionData = {
   title: string;
@@ -81,14 +83,23 @@ const DashboardScreen: React.FC = () => {
   // 2. Lógica de busca de dados (Mantida igual)
   useEffect(() => {
     if (user) {
-      getMyTransactions(user.uid).then(setTransactions);
-      getSummary(user.uid).then(setSummaryList);
       getUserInfo(user.uid).then((userData) => {
-        setBalance(userData?.balance || 0);
         setName(userData?.name || "Usuário");
       });
     }
   }, [user]);
+
+  useFocusEffect(
+    useCallback(() => {
+      if (user) {
+        getMyTransactions(user!.uid).then(setTransactions);
+        getSummary(user!.uid).then(setSummaryList);
+        getUserInfo(user.uid).then((userData) => {
+          setBalance(userData?.balance || 0);
+        });
+      }
+    }, [])
+  );
 
   // 3. O Pulo do Gato: Header com Padding Dinâmico
   const renderSectionHeader = ({ section }: { section: SectionData }) => (

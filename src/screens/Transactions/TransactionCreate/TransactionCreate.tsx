@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useCallback, useState } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -23,31 +23,31 @@ import AutocompleteCategories from "../../../components/forms/AutocompleteCatego
 import { createTransaction } from "../../../services/transactions";
 import { useAuth } from "../../../services/firebase/auth";
 import { TransactionType } from "../../../types/transaction";
-
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
+import { SuccessScreen } from "../../auth";
 const TransactionCreate: React.FC = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [transactionType, setTransactionType] = useState<TransactionType>("INCOME");
+  const [isSuccess, setIsSuccess] = useState(false); // Estado para a tela de sucesso
+  const navigation = useNavigation();
+
+  // Estados do formulário
+  const [transactionType, setTransactionType] =
+    useState<TransactionType>("INCOME");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
-  const [categoriaSelecionada, setCategoriaSelecionada] = useState<string>("");
+  const [categoriaSelecionada, setCategoriaSelecionada] = useState<any>(null);
 
-  const handleTransactionCreate = async () => {
-    try {
-      setLoading(true);
-      // Lógica de criação da transação aqui
-      createTransaction(user!.uid, {
-        transactionType: transactionType,
-        price: transactionType === "INCOME" ? parseFloat(price) : -parseFloat(price),
-        description,
-        category: categoriaSelecionada
-      });
-    } catch (error) {
-      console.error("Erro ao criar transação:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  // Lógica para resetar os campos sempre que a tela ganhar foco
+  useFocusEffect(
+    useCallback(() => {
+      setIsSuccess(false);
+      setPrice("");
+      setDescription("");
+      setCategoriaSelecionada(null);
+      setTransactionType("INCOME");
+    }, [])
+  );
 
   const animatedStyle = useAnimatedStyle(() => {
     return {
@@ -64,6 +64,41 @@ const TransactionCreate: React.FC = () => {
       ),
     };
   });
+
+  const handleTransactionCreate = async () => {
+    if (!price || !categoriaSelecionada) {
+      alert("Por favor, preencha o valor e a categoria.");
+      return;
+    }
+
+    try {
+      setLoading(true);
+      await createTransaction(user!.uid, {
+        transactionType: transactionType,
+        price:
+          transactionType === "INCOME" ? parseFloat(price) : -parseFloat(price),
+        description,
+        category: categoriaSelecionada.nome, // Certifique-se de salvar a string ou objeto conforme seu banco
+      });
+
+      setIsSuccess(true); // Ativa a tela de sucesso após criar
+    } catch (error) {
+      console.error("Erro ao criar transação:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Se estiver em modo de sucesso, renderiza a SuccessScreen
+  if (isSuccess) {
+    return (
+      <SuccessScreen
+        successProps={{ title: "Sucesso!" }}
+        onAddMore={() => setIsSuccess(false)} // Reseta isSuccess e o useFocusEffect limpa o resto
+        onGoHome={() => navigation.navigate("Home" as never)}
+      />
+    );
+  }
 
   const salvarCategoria = (categoria: any) => {
     setCategoriaSelecionada(categoria); // Agora o pai tem o dado!
@@ -154,7 +189,9 @@ const TransactionCreate: React.FC = () => {
 
               <View style={TransactionCreateStyle.mainInput}>
                 <Text style={TransactionCreateStyle.labelInput}>Categoria</Text>
-                <AutocompleteCategories aoSelecionar={salvarCategoria}></AutocompleteCategories>
+                <AutocompleteCategories
+                  aoSelecionar={salvarCategoria}
+                ></AutocompleteCategories>
               </View>
 
               <TouchableOpacity
@@ -183,5 +220,3 @@ const TransactionCreate: React.FC = () => {
 };
 
 export default TransactionCreate;
-
-//
