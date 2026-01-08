@@ -1,5 +1,12 @@
 import React, { useState, useCallback } from "react";
-import { View, Text, FlatList, RefreshControl, TextInput } from "react-native";
+import {
+  View,
+  Text,
+  FlatList,
+  RefreshControl,
+  TextInput,
+  TouchableOpacity,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "../../../services/firebase/auth";
 import TransactionItem from "../../../components/common/TransactionItem/TransactionItem";
@@ -9,6 +16,7 @@ import { RegisterScreenStyles } from "../../auth/RegisterScreen/RegisterScreen.s
 import { LIGHT_BLUE } from "../../../utils/colors";
 import { useFocusEffect } from "@react-navigation/native";
 import { getMyTransactions } from "../../../services/transactions";
+import { normalize } from "../../../utils";
 
 const TransactionListScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
@@ -17,6 +25,8 @@ const TransactionListScreen: React.FC = () => {
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const categoriasUsadas = [...new Set(transactions.map((t) => t.category))];
+  const [categoriaFiltro, setCategoriaFiltro] = useState("");
 
   useFocusEffect(
     useCallback(() => {
@@ -34,25 +44,72 @@ const TransactionListScreen: React.FC = () => {
   };
 
   // Filtro de busca local (opcional)
-  const filteredTransactions = transactions.filter(
-    (t) =>
+  // Filtro de busca local Combinado (Texto + Chip)
+  const filteredTransactions = transactions.filter((t) => {
+    // Se o filtro for vazio ou "Todas", ele ignora essa parte.
+    // Caso contrário, verifica se a categoria é exatamente a do chip.
+    const matchesCategory =
+      categoriaFiltro === "" || t.category === categoriaFiltro;
+
+    const matchesSearch =
       t.description?.toLowerCase().includes(searchText.toLowerCase()) ||
-      t.category.toLowerCase().includes(searchText.toLowerCase())
-  );
+      t.category.toLowerCase().includes(searchText.toLowerCase());
+
+    return matchesCategory && matchesSearch;
+  });
+
+  const ListHeader = () => {
+    return (
+      <>
+        <View style={TransactionCreateStyle.mainInput}>
+          <TextInput
+            style={RegisterScreenStyles.input}
+            placeholder="Buscar transação"
+            placeholderTextColor="#999"
+            value={searchText}
+            onChangeText={setSearchText}
+            autoCapitalize="words"
+          />
+        </View>
+
+        <FlatList
+          horizontal
+          data={categoriasUsadas}
+          showsHorizontalScrollIndicator={false}
+          keyExtractor={(item) => item}
+          renderItem={({ item }) => {
+            const isSelected = item === categoriaFiltro;
+            return (
+              <TouchableOpacity
+                style={{
+                  borderColor: isSelected ? "#009BE9" : "#0F2C59",
+                  backgroundColor: isSelected ? "#009BE9" : "transparent", // Opcional: destaque de fundo
+                  borderWidth: 1,
+                  borderRadius: 20,
+                  paddingHorizontal: 20,
+                  paddingVertical: 5,
+                  marginRight: 10,
+                  marginBottom: 25,
+                }}
+                onPress={() => {
+                  // Se clicar no mesmo, desmarca. Se não, marca o novo.
+                  setCategoriaFiltro(isSelected ? "" : item);
+                }}
+              >
+                <Text>{item}</Text>
+              </TouchableOpacity>
+            );
+          }}
+        />
+      </>
+    );
+  };
 
   return (
     <View
       style={[TransactionCreateStyle.container, { paddingTop: insets.top }]}
     >
       {/* Header e Barra de Busca conforme seu layout */}
-      <View style={TransactionCreateStyle.mainInput}>
-        <TextInput
-          style={RegisterScreenStyles.input}
-          placeholder="Buscar transação"
-          value={searchText}
-          onChangeText={setSearchText}
-        />
-      </View>
 
       <FlatList
         data={filteredTransactions}
@@ -63,12 +120,15 @@ const TransactionListScreen: React.FC = () => {
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
         renderItem={({ item }) => (
-          <View style={{
-            marginBlockEnd: 20,
-          }}>
+          <View
+            style={{
+              marginBlockEnd: 20,
+            }}
+          >
             <TransactionItem transaction={item} />
           </View>
         )}
+        ListHeaderComponent={<ListHeader />}
         ListEmptyComponent={
           <View
             style={{
