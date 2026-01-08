@@ -5,24 +5,18 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { SummaryCardStyles } from "./SummaryCard.styles";
 import { PRIMARY_BLUE } from "../../../utils/colors";
 import { useAuth } from "../../../services/firebase/auth";
-import { createTransaction } from "../../../services/transactions";
 import { formatCurrency } from "../../../utils/formatters";
+import { useNavigation } from "@react-navigation/native";
 
 const SummaryCard: React.FC<{ name: string; balance: number }> = ({
   name,
   balance,
 }) => {
-  const { logout, user } = useAuth();
+  const navigation = useNavigation();
 
-  const handleLogout = async () => {
-    if (!user) return;
-
-    await createTransaction(user?.uid, {
-      transactionType: "INCOME",
-      price: 5320,
-      category: "Salario",
-    });
-  };
+  const onToGoExtrato = () => {
+    navigation.navigate("Transactions" as never);
+  }
 
   return (
     <View style={SummaryCardStyles.headerContainer}>
@@ -52,7 +46,7 @@ const SummaryCard: React.FC<{ name: string; balance: number }> = ({
         {/* Botão Extrato */}
         <TouchableOpacity
           style={SummaryCardStyles.headerStatementButton}
-          onPress={handleLogout}
+          onPress={onToGoExtrato}
         >
           <Text style={SummaryCardStyles.headerStatementButtonText}>
             Extrato
