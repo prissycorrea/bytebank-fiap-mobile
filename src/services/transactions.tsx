@@ -14,8 +14,15 @@ import { stackDataItem } from "react-native-gifted-charts";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { BLUE_SKY, WHITE } from "../utils/colors";
 import { getUserInfo } from "./users";
+import { 
+  ref, 
+  uploadBytes, 
+  getDownloadURL, 
+  getStorage
+} from "firebase/storage";
 
 const db = getFirestore(firabaseConfigAuth.app);
+const storage = getStorage(firabaseConfigAuth.app);
 const collectionRef = collection(db, "transactions");
 const categoriasParaSubir = [
   { nome: "Alimentação", busca: "alimentacao" },
@@ -223,6 +230,23 @@ export const generateCategoriesList = async () => {
   } catch (e) {
     console.error("Erro ao subir dados: ", e);
   }
+};
+
+export const uploadFile = async (uri: string, userId: string): Promise<string> => {
+  const blob: any = await new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => resolve(xhr.response);
+    xhr.onerror = () => reject(new TypeError("Network request failed"));
+    xhr.responseType = "blob";
+    xhr.open("GET", uri, true);
+    xhr.send(null);
+  });
+
+  const fileRef = ref(storage, `comprovantes/${userId}/${Date.now()}`);
+  await uploadBytes(fileRef, blob);
+  
+  // Retorna a URL pública
+  return await getDownloadURL(fileRef);
 };
 
 // Função auxiliar para converter "2025_01" em "Jan"

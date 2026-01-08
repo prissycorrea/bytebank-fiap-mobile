@@ -6,6 +6,7 @@ export type ITransaction = {
   createdAt?: string;
   description?: string;
   category: string;
+  attachmentUrl?: string;
 }
 
 export enum TransactionTypeEnum {

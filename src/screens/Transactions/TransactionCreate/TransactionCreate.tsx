@@ -20,11 +20,13 @@ import Animated, {
 import { DANGER, SUCCESS } from "../../../utils/colors";
 import { RegisterScreenStyles } from "../../auth/RegisterScreen/RegisterScreen.styles";
 import AutocompleteCategories from "../../../components/forms/AutocompleteCategories/AutocompleteCategories";
-import { createTransaction } from "../../../services/transactions";
+import { createTransaction, uploadFile } from "../../../services/transactions";
 import { useAuth } from "../../../services/firebase/auth";
 import { TransactionType } from "../../../types/transaction";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { SuccessScreen } from "../../auth";
+import * as ImagePicker from "expo-image-picker";
+
 const TransactionCreate: React.FC = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
@@ -37,6 +39,7 @@ const TransactionCreate: React.FC = () => {
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<any>(null);
+  const [image, setImage] = useState<string | null>(null);
 
   // Lógica para resetar os campos sempre que a tela ganhar foco
   useFocusEffect(
@@ -73,12 +76,18 @@ const TransactionCreate: React.FC = () => {
 
     try {
       setLoading(true);
+      let imageUrl = "";
+
+      if (image) {
+        imageUrl = await uploadFile(image, user!.uid);
+      }
       await createTransaction(user!.uid, {
         transactionType: transactionType,
         price:
           transactionType === "INCOME" ? parseFloat(price) : -parseFloat(price),
         description,
         category: categoriaSelecionada.nome, // Certifique-se de salvar a string ou objeto conforme seu banco
+        attachmentUrl: imageUrl,
       });
 
       setIsSuccess(true); // Ativa a tela de sucesso após criar
@@ -110,6 +119,19 @@ const TransactionCreate: React.FC = () => {
 
   const salvarCategoria = (categoria: any) => {
     setCategoriaSelecionada(categoria); // Agora o pai tem o dado!
+  };
+
+  // Função para selecionar a imagem
+  const pickImage = async () => {
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      quality: 0.5, // Reduz qualidade para o upload ser mais rápido
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
   };
 
   return (
@@ -200,6 +222,32 @@ const TransactionCreate: React.FC = () => {
                 <AutocompleteCategories
                   aoSelecionar={salvarCategoria}
                 ></AutocompleteCategories>
+              </View>
+
+              <View style={TransactionCreateStyle.mainInput}>
+                <Text style={TransactionCreateStyle.labelInput}>
+                  Comprovante
+                </Text>
+                <TouchableOpacity
+                  style={[
+                    RegisterScreenStyles.input,
+                    {
+                      justifyContent: "center",
+                      alignItems: "center",
+                      borderStyle: "dashed",
+                      borderWidth: 2,
+                    },
+                  ]}
+                  onPress={pickImage}
+                >
+                  {image ? (
+                    <Text style={{ color: SUCCESS }}>✓ Imagem selecionada</Text>
+                  ) : (
+                    <Text style={{ color: "#999" }}>
+                      + Clique para anexar foto
+                    </Text>
+                  )}
+                </TouchableOpacity>
               </View>
 
               <TouchableOpacity
