@@ -6,8 +6,13 @@ import {
   RefreshControl,
   TextInput,
   TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { useAuth } from "../../../services/firebase/auth";
 import TransactionItem from "../../../components/common/TransactionItem/TransactionItem";
 import { ITransaction } from "../../../types/transaction";
@@ -58,9 +63,9 @@ const TransactionListScreen: React.FC = () => {
     return matchesCategory && matchesSearch;
   });
 
-  const ListHeader = () => {
+  const listHeader = () => {
     return (
-      <>
+      <View style={{ paddingHorizontal: 20 }}>
         <View style={TransactionCreateStyle.mainInput}>
           <TextInput
             style={RegisterScreenStyles.input}
@@ -101,55 +106,62 @@ const TransactionListScreen: React.FC = () => {
             );
           }}
         />
-      </>
+      </View>
     );
   };
 
   return (
-    <View
-      style={[TransactionCreateStyle.container, { paddingTop: insets.top }]}
-    >
-      {/* Header e Barra de Busca conforme seu layout */}
+    <SafeAreaView style={TransactionCreateStyle.container}>
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{
+          flex: 1,
+        }}
+      >
+        {listHeader()}
 
-      <FlatList
-        data={filteredTransactions}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}
-        showsVerticalScrollIndicator={false} // Oculta a barra de rolagem
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
-        renderItem={({ item }) => (
-          <View
-            style={{
-              marginBlockEnd: 20,
-            }}
-          >
-            <TransactionItem transaction={item} />
-          </View>
-        )}
-        ListHeaderComponent={<ListHeader />}
-        ListFooterComponent={
-          <View style={{ height: 50, backgroundColor: LIGHT_BLUE }} />
-        }
-        ListEmptyComponent={
-          <View
-            style={{
-              backgroundColor: LIGHT_BLUE,
-              padding: 20,
-              alignItems: "center",
-              borderBottomLeftRadius: 24,
-              borderBottomRightRadius: 24,
-              marginBottom: 24,
-            }}
-          >
-            <Text style={{ fontFamily: "Poppins_400Regular" }}>
-              Não há transações para exibir.
-            </Text>
-          </View>
-        }
-      />
-    </View>
+        <View
+          style={[TransactionCreateStyle.container, { paddingTop: insets.top }]}
+        >
+          {/* Header e Barra de Busca conforme seu layout */}
+
+          <FlatList
+            data={filteredTransactions}
+            keyExtractor={(item) => item.id}
+            contentContainerStyle={{ paddingBottom: insets.bottom + 20 }}
+            showsVerticalScrollIndicator={false} // Oculta a barra de rolagem
+            refreshControl={
+              <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+            }
+            renderItem={({ item }) => (
+              <View
+                style={{
+                  marginBlockEnd: 20,
+                }}
+              >
+                <TransactionItem transaction={item} />
+              </View>
+            )}
+            ListEmptyComponent={
+              <View
+                style={{
+                  backgroundColor: LIGHT_BLUE,
+                  padding: 20,
+                  alignItems: "center",
+                  borderBottomLeftRadius: 24,
+                  borderBottomRightRadius: 24,
+                  marginBottom: 24,
+                }}
+              >
+                <Text style={{ fontFamily: "Poppins_400Regular" }}>
+                  Não há transações para exibir.
+                </Text>
+              </View>
+            }
+          />
+        </View>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 };
 
