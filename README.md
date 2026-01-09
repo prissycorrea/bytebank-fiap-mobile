@@ -140,3 +140,53 @@ bytebank-mobile/
 ### 🛠️ Desenvolvimento
 - **`typescript`** - Superset do JavaScript com tipagem estática
 - **`@types/react`** - Definições de tipos TypeScript para React
+
+## 🚀 Como Executar
+
+### Pré-requisitos
+Certifique-se de ter o Node.js instalado e o ambiente configurado.
+
+### Instalação
+```bash
+npm install
+```
+
+### Executando o Projeto
+
+#### 🤖 Emulador Android
+Para rodar a aplicação no emulador do Android (requer Android Studio configurado):
+```bash
+npm run android
+```
+
+#### 📱 Dispositivo Físico (Expo Go)
+Para rodar no seu próprio celular via Expo Go:
+1. Baixe o app **Expo Go** na loja do seu celular.
+2. Execute o comando abaixo para iniciar com túnel (evita problemas de rede):
+```bash
+npm run tunnel
+```
+3. Escaneie o QR Code exibido no terminal.
+
+## 🚀 Como Executar
+
+### Pré-requisitos
+Certifique-se de ter o Node.js instalado e o ambiente configurado.
+
+### Instalação
+```bash
+npm install
+```
+
+### Executando o Projeto
+
+#### 🤖 Emulador Android
+Para rodar a aplicação no emulador do Android (requer Android Studio configurado):
+```bash
+npm run android
+```
+
+#### Opções de Visualização:
+- **Expo Go (Dispositivo Físico):** Escaneie o QR Code exibido no terminal com o app Expo Go (Android/iOS).
+- **Emulador Android:** Pressione `a` no terminal ou rode `npm run android`. (Requer Android Studio configurado).
+- **Simulador iOS:** Pressione `i` no terminal ou rode `npm run ios`. (Requer macOS e Xcode).
