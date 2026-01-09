@@ -8,13 +8,13 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-
 import DashboardScreenStyles from "./Dashboard.styles";
 import { LinearGradient } from "expo-linear-gradient";
 import {
   PRIMARY_BLUE,
   SECONDARY_BLUE,
   LIGHT_BLUE,
+  BLUE_SKY,
 } from "../../../utils/colors";
 import SummaryCard from "../../../components/common/SummaryCard/SummaryCard";
 import FinancialCard, {
@@ -22,6 +22,7 @@ import FinancialCard, {
 } from "../../../components/common/FinancialCard/FinancialCard";
 import { useAuth } from "../../../services/firebase/auth";
 import {
+  getMonthlySummaries,
   getMyTransactions,
   getSummary,
 } from "../../../services/transactions";
@@ -31,7 +32,7 @@ import { TransactionWidgetStyles } from "../../Transactions/TransactionWidget/Tr
 import ChartsWidget from "../../../components/layout/Charts/ChartsWidget";
 import { getUserInfo } from "../../../services/users";
 import { useFocusEffect, useNavigation } from "@react-navigation/native";
-
+import { stackDataItem } from "react-native-gifted-charts";
 
 type SectionData = {
   title: string;
@@ -41,6 +42,7 @@ type SectionData = {
 const DashboardScreen: React.FC = () => {
   // 1. Hook para pegar a altura da barra de status (ex: 47px no iPhone)
   const insets = useSafeAreaInsets();
+  const currentMonthIndex = new Date().getMonth();
 
   const { user } = useAuth();
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
@@ -48,6 +50,8 @@ const DashboardScreen: React.FC = () => {
   const [name, setName] = useState<string>("Usuário");
   const [summaryList, setSummaryList] = useState<FinancialCardProps[]>([]);
   const [refreshing, setRefreshing] = useState(false);
+  const [monthlySummaries, setMonthlySummaries] = useState<stackDataItem[]>([]);
+
   const navigation = useNavigation();
 
   const sections = [
@@ -70,6 +74,22 @@ const DashboardScreen: React.FC = () => {
         getUserInfo(user.uid).then((userData) => {
           setBalance(userData?.balance || 0);
           setName(userData?.name || "Usuário");
+        }),
+        getMonthlySummaries(user?.uid).then((monthlySummaries) => {
+          setMonthlySummaries(
+            monthlySummaries.map((item, index) => ({
+              ...item,
+              labelTextStyle:
+                index === currentMonthIndex
+                  ? {
+                      color: BLUE_SKY,
+                      fontWeight: "bold",
+                      marginLeft: -18,
+                      textAlign: "center",
+                    } // Destaque para o mês atual
+                  : undefined,
+            }))
+          );
         }),
       ]);
     } catch (error) {
@@ -123,7 +143,12 @@ const DashboardScreen: React.FC = () => {
       >
         <Text style={DashboardScreenStyles.titleSection}>{section.title}</Text>
         {section.data.length > 0 && (
-          <Text style={DashboardScreenStyles.redirectSection} onPress={onToGoExtrato}>Ver todas</Text>
+          <Text
+            style={DashboardScreenStyles.redirectSection}
+            onPress={onToGoExtrato}
+          >
+            Ver todas
+          </Text>
         )}
       </View>
     </View>
@@ -131,8 +156,7 @@ const DashboardScreen: React.FC = () => {
 
   const onToGoExtrato = () => {
     navigation.navigate("Transactions" as never);
-  }
-
+  };
 
   return (
     <LinearGradient
@@ -163,26 +187,28 @@ const DashboardScreen: React.FC = () => {
             {/* 1. HEADER E SALDO */}
             <SummaryCard name={name} balance={balance} />
             {/* 2. GRAFICO MENSAL */}
-            <ChartsWidget />
+            <ChartsWidget monthlySummaries={monthlySummaries} />
             {/* 2. CARTÕES FINANCEIROS */}
             <FinancialCard items={summaryList} />
           </View>
         }
         renderSectionHeader={renderSectionHeader}
-        ListEmptyComponent={<View
-          style={{
-            backgroundColor: LIGHT_BLUE,
-            padding: 20,
-            alignItems: "center",
-            borderBottomLeftRadius: 24,
-            borderBottomRightRadius: 24,
-            marginBottom: 24,
-          }}
-        >
-          <Text style={{ fontFamily: "Poppins_400Regular" }}>
-            Não há transações para exibir.
-          </Text>
-        </View>}
+        ListEmptyComponent={
+          <View
+            style={{
+              backgroundColor: LIGHT_BLUE,
+              padding: 20,
+              alignItems: "center",
+              borderBottomLeftRadius: 24,
+              borderBottomRightRadius: 24,
+              marginBottom: 24,
+            }}
+          >
+            <Text style={{ fontFamily: "Poppins_400Regular" }}>
+              Não há transações para exibir.
+            </Text>
+          </View>
+        }
         // 5. Item da lista com fundo branco/gelo para continuidade
         renderItem={({ item }) => (
           <View style={[TransactionWidgetStyles.container]}>
@@ -192,7 +218,9 @@ const DashboardScreen: React.FC = () => {
         stickySectionHeadersEnabled={true}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
-        ListFooterComponent={<View style={{ height: 100, backgroundColor: LIGHT_BLUE }} />}
+        ListFooterComponent={
+          <View style={{ height: 100, backgroundColor: LIGHT_BLUE }} />
+        }
       />
     </LinearGradient>
   );
