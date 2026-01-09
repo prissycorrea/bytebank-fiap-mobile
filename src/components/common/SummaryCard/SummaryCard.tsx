@@ -5,25 +5,20 @@ import { MaterialIcons } from "@expo/vector-icons";
 import { SummaryCardStyles } from "./SummaryCard.styles";
 import { PRIMARY_BLUE } from "../../../utils/colors";
 import { useAuth } from "../../../services/firebase/auth";
-import { createTransaction } from "../../../services/transactions";
 import { formatCurrency } from "../../../utils/formatters";
+import { useNavigation } from "@react-navigation/native";
 
-const SummaryCard: React.FC<{ name: string; balance: string }> = ({
+const SummaryCard: React.FC<{ name: string; balance: number }> = ({
   name,
   balance,
 }) => {
   const { logout, user, userData } = useAuth();
   const [showMenu, setShowMenu] = useState(false);
+  const navigation = useNavigation();
 
-  const handleLogout = async () => {
-    if (!user) return;
-
-    await createTransaction(user?.uid, {
-      transactionType: "INCOME",
-      price: 5320,
-      category: "Salario",
-    });
-  };
+  const onToGoExtrato = () => {
+    navigation.navigate("Transactions" as never);
+  }
 
   const handleLogoutPress = () => {
     setShowMenu(false);
@@ -36,7 +31,7 @@ const SummaryCard: React.FC<{ name: string; balance: string }> = ({
         <View style={SummaryCardStyles.headerProfile}>
           {/* Ícone de Usuário */}
           {/* <MaterialIcons name="account-circle" size={40} color="#fff" /> */}
-          <TouchableOpacity 
+          <TouchableOpacity
             style={SummaryCardStyles.headerAvatar}
             onPress={() => setShowMenu(true)}
           >
@@ -62,7 +57,7 @@ const SummaryCard: React.FC<{ name: string; balance: string }> = ({
           activeOpacity={1}
           onPress={() => setShowMenu(false)}
         >
-          <View 
+          <View
             style={SummaryCardStyles.menuContainer}
             onStartShouldSetResponder={() => true}
           >
@@ -81,13 +76,13 @@ const SummaryCard: React.FC<{ name: string; balance: string }> = ({
         <View>
           <Text style={SummaryCardStyles.headerBalanceLabel}>Saldo atual</Text>
           <Text style={SummaryCardStyles.headerBalanceValue}>
-            {formatCurrency(userData?.balance ?? 0, true)}
+            {formatCurrency(balance, true)}
           </Text>
         </View>
         {/* Botão Extrato */}
         <TouchableOpacity
           style={SummaryCardStyles.headerStatementButton}
-          onPress={handleLogout}
+          onPress={onToGoExtrato}
         >
           <Text style={SummaryCardStyles.headerStatementButtonText}>
             Extrato

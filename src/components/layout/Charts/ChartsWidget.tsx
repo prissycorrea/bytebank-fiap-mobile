@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { View, Text } from "react-native";
 import { BarChart, stackDataItem } from "react-native-gifted-charts";
 import { BLUE_SKY, WHITE } from "../../../utils/colors";
-import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 import { useAuth } from "../../../services/firebase/auth";
 import { getMonthlySummaries } from "../../../services/transactions";
 import { ChartsWidgetStyles } from "./ChartsWidget.styles";

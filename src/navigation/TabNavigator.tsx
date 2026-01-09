@@ -1,10 +1,19 @@
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import DashboardScreen from "../screens/home/DashboardScreen/DashboardScreen";
-import { BLUE_SKY, GRAY_DARK, GRAY_LIGHT, PRIMARY_BLUE, WHITE } from "../utils/colors";
+import {
+  BLUE_SKY,
+  GRAY_DARK,
+  GRAY_LIGHT,
+  LIGHT_BLUE,
+  PRIMARY_BLUE,
+  WHITE,
+} from "../utils/colors";
+import TransactionCreate from "../screens/Transactions/TransactionCreate/TransactionCreate";
+import TransactionList from "../screens/Transactions/TransactionList/TransactionList";
 
 const Tab = createBottomTabNavigator();
 const Placeholder = () => (
@@ -15,7 +24,7 @@ export const TabNavigator = () => {
 
   return (
     <Tab.Navigator
-    initialRouteName="Home"
+      initialRouteName="Home"
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
@@ -29,14 +38,38 @@ export const TabNavigator = () => {
     >
       <Tab.Screen
         name="Add"
-        component={Placeholder}
-        options={{
+        component={TransactionCreate}
+        options={({ navigation }: any) => ({
+          headerShown: true,
+          headerTitle: "Adicionar Transação",
+          headerTitleAlign: "center",
+          headerLeft: () => (
+            <TouchableOpacity
+              style={{ marginLeft: 20 }}
+              onPress={() => navigation.navigate("Home")} // Volta para a aba Home
+            >
+              <Ionicons name="chevron-back" size={28} color="#1D3557" />
+            </TouchableOpacity>
+          ),
+          headerStyle: {
+            elevation: 0, // Remove sombra no Android
+            shadowOpacity: 0, // Remove sombra no iOS
+            borderBottomWidth: 0, // Remove linha no iOS
+            backgroundColor: LIGHT_BLUE,
+          },
+          headerTitleStyle: {
+            fontFamily: "Poppins_600SemiBold", // Usa a fonte que você já carregou
+            fontSize: 20,
+            fontWeight: "bold",
+            color: PRIMARY_BLUE,
+            textAlign: "center",
+          },
           tabBarIcon: () => (
             <View style={styles.plusButton}>
               <Ionicons name="add" size={30} color="white" />
             </View>
           ),
-        }}
+        })}
       />
       <Tab.Screen
         name="Home"
@@ -46,24 +79,48 @@ export const TabNavigator = () => {
             <Ionicons
               name="home-sharp"
               size={24}
-              color={focused ? PRIMARY_BLUE : GRAY_LIGHT }
+              color={focused ? PRIMARY_BLUE : GRAY_LIGHT}
             />
           ),
         }}
       />
 
       <Tab.Screen
-        name="Exchange"
-        component={Placeholder}
-        options={{
+        name="Transactions"
+        component={TransactionList}
+        options={({ navigation }: any) => ({
+          headerShown: true,
+          headerTitle: "Transações",
+          headerTitleAlign: "center",
+          headerLeft: () => (
+            <TouchableOpacity
+              style={{ marginLeft: 20 }}
+              onPress={() => navigation.navigate("Home")} // Volta para a aba Home
+            >
+              <Ionicons name="chevron-back" size={28} color="#1D3557" />
+            </TouchableOpacity>
+          ),
+          headerStyle: {
+            elevation: 0, // Remove sombra no Android
+            shadowOpacity: 0, // Remove sombra no iOS
+            borderBottomWidth: 0, // Remove linha no iOS
+            backgroundColor: LIGHT_BLUE,
+          },
+          headerTitleStyle: {
+            fontFamily: "Poppins_600SemiBold", // Usa a fonte que você já carregou
+            fontSize: 20,
+            fontWeight: "bold",
+            color: PRIMARY_BLUE,
+            textAlign: "center",
+          },
           tabBarIcon: ({ focused }) => (
             <MaterialCommunityIcons
               name="swap-horizontal"
               size={28}
-              color={focused ? PRIMARY_BLUE : GRAY_LIGHT }
+              color={focused ? PRIMARY_BLUE : GRAY_LIGHT}
             />
           ),
-        }}
+        })}
       />
     </Tab.Navigator>
   );
