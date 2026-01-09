@@ -1,39 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { View, Text } from "react-native";
 import { BarChart, stackDataItem } from "react-native-gifted-charts";
 import { BLUE_SKY, WHITE } from "../../../utils/colors";
-import { useAuth } from "../../../services/firebase/auth";
-import { getMonthlySummaries } from "../../../services/transactions";
 import { ChartsWidgetStyles } from "./ChartsWidget.styles";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
-const ChartsWidget: React.FC = () => {
+const ChartsWidget: React.FC<{ monthlySummaries: stackDataItem[] }> = ({ monthlySummaries }) => {
   const currentMonthIndex = new Date().getMonth(); // 0 para Jan, 1 para Fev, etc.
-  const { user } = useAuth();
-  const [monthlySummaries, setMonthlySummaries] = useState<stackDataItem[]>([]);
-
-  useEffect(() => {
-    if (user) {
-      getMonthlySummaries(user?.uid).then((monthlySummaries) => {
-        console.log(JSON.stringify(monthlySummaries, null, 2));
-
-        setMonthlySummaries(
-          monthlySummaries.map((item, index) => ({
-            ...item,
-            labelTextStyle:
-              index === currentMonthIndex
-                ? {
-                    color: BLUE_SKY,
-                    fontWeight: "bold",
-                    marginLeft: -18,
-                    textAlign: "center",
-                  } // Destaque para o mês atual
-                : undefined,
-          }))
-        );
-      });
-    }
-  }, [user]);
 
   const renderLegend = (color: string, label: string) => (
     <View
