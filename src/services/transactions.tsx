@@ -1,20 +1,50 @@
 import {
+  addDoc,
   doc,
   getFirestore,
   increment,
   where,
   writeBatch,
 } from "firebase/firestore";
-import { firebaseConfigAuth } from "./firebase/config";
+import { db, app } from "./firebase/config";
 import { ITransaction, TransactionType } from "../types/transaction";
 import { FinancialCardProps } from "../components/common/FinancialCard/FinancialCard";
 import { formatCurrency } from "../utils/formatters";
 import { stackDataItem } from "react-native-gifted-charts";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { BLUE_SKY, WHITE } from "../utils/colors";
+import { getUserInfo } from "./users";
+import {
+  ref,
+  uploadBytes,
+  getDownloadURL,
+  getStorage
+} from "firebase/storage";
 
-const db = getFirestore(firebaseConfigAuth.app);
+const storage = getStorage(app);
 const collectionRef = collection(db, "transactions");
+const categoriasParaSubir = [
+  { nome: "Alimentação", busca: "alimentacao" },
+  { nome: "Aluguel", busca: "aluguel" },
+  { nome: "Assinaturas e Serviços", busca: "assinaturas e servicos" },
+  { nome: "Casa", busca: "casa" },
+  { nome: "Compras", busca: "compras" },
+  { nome: "Cuidados Pessoais", busca: "cuidados pessoais" },
+  { nome: "Educação", busca: "educacao" },
+  { nome: "Empréstimos", busca: "emprestimos" },
+  { nome: "Entretenimento", busca: "entretenimento" },
+  { nome: "Esportes", busca: "esportes" },
+  { nome: "Investimentos", busca: "investimentos" },
+  { nome: "Lazer", busca: "lazer" },
+  { nome: "Mercado", busca: "mercado" },
+  { nome: "Outros", busca: "outros" },
+  { nome: "Presentes", busca: "presentes" },
+  { nome: "Salário", busca: "salario" },
+  { nome: "Saúde", busca: "saude" },
+  { nome: "Trabalho Extra", busca: "trabalho extra" },
+  { nome: "Transporte", busca: "transporte" },
+  { nome: "Viagens", busca: "viagens" },
+];
 
 export const getMyTransactions = async (
   userId: string
@@ -105,21 +135,6 @@ export const createTransaction = async (
   }
 };
 
-export const getBalance = async (userId: string): Promise<number> => {
-  try {
-    const transactions = await getMyTransactions(userId);
-    const balance = transactions.reduce((acc, transaction) => {
-      return transaction.transactionType === "INCOME"
-        ? acc + transaction.price
-        : acc - transaction.price;
-    }, 0);
-    return balance;
-  } catch (error) {
-    console.error("Erro ao calcular saldo:", error);
-    return 0;
-  }
-};
-
 export const getSummary = async (
   userId: string
 ): Promise<FinancialCardProps[]> => {
@@ -133,7 +148,7 @@ export const getSummary = async (
       (acc, transaction) => acc + transaction.price,
       0
     );
-    const balance = await getBalance(userId);
+    const balance = await getUserInfo(userId);
 
     return [
       {
@@ -149,7 +164,7 @@ export const getSummary = async (
       {
         type: "balance",
         label: "Balanço",
-        value: formatCurrency(balance),
+        value: formatCurrency(balance?.balance || 0),
       },
     ];
   } catch (error) {
@@ -202,6 +217,35 @@ export const getMonthlySummaries = async (userId: string) => {
     console.error("Erro ao buscar resumos no Firebase:", error);
     return [];
   }
+};
+
+export const generateCategoriesList = async () => {
+  try {
+    const colRef = collection(db, "categories");
+    for (const cat of categoriasParaSubir) {
+      await addDoc(colRef, cat);
+    }
+    alert("Categorias adicionadas!");
+  } catch (e) {
+    console.error("Erro ao subir dados: ", e);
+  }
+};
+
+export const uploadFile = async (uri: string, userId: string): Promise<string> => {
+  const blob: any = await new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    xhr.onload = () => resolve(xhr.response);
+    xhr.onerror = () => reject(new TypeError("Network request failed"));
+    xhr.responseType = "blob";
+    xhr.open("GET", uri, true);
+    xhr.send(null);
+  });
+
+  const fileRef = ref(storage, `comprovantes/${userId}/${Date.now()}`);
+  await uploadBytes(fileRef, blob);
+
+  // Retorna a URL pública
+  return await getDownloadURL(fileRef);
 };
 
 // Função auxiliar para converter "2025_01" em "Jan"

@@ -1,6 +1,7 @@
 export type IUser = {
+  id: string;
   name: string;
   email: string;
   password: string;
-  balance: number;
+  balance?: number;
 };

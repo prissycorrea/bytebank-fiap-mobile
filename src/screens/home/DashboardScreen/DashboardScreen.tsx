@@ -1,5 +1,11 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, SectionList, StatusBar } from "react-native";
+import React, { useCallback, useEffect, useState } from "react";
+import {
+  View,
+  Text,
+  SectionList,
+  StatusBar,
+  RefreshControl,
+} from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 
@@ -16,15 +22,15 @@ import FinancialCard, {
 } from "../../../components/common/FinancialCard/FinancialCard";
 import { useAuth } from "../../../services/firebase/auth";
 import {
-  getBalance,
   getMyTransactions,
   getSummary,
 } from "../../../services/transactions";
 import { ITransaction } from "../../../types/transaction";
-import { formatCurrency } from "../../../utils/formatters";
 import TransactionItem from "../../../components/common/TransactionItem/TransactionItem";
 import { TransactionWidgetStyles } from "../../Transactions/TransactionWidget/TransactionWidget.styles";
 import ChartsWidget from "../../../components/layout/Charts/ChartsWidget";
+import { getUserInfo } from "../../../services/users";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 
 
 type SectionData = {
@@ -36,10 +42,13 @@ const DashboardScreen: React.FC = () => {
   // 1. Hook para pegar a altura da barra de status (ex: 47px no iPhone)
   const insets = useSafeAreaInsets();
 
-  const { user, userData } = useAuth();
+  const { user } = useAuth();
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
   const [balance, setBalance] = useState<number>(0);
+  const [name, setName] = useState<string>("Usuário");
   const [summaryList, setSummaryList] = useState<FinancialCardProps[]>([]);
+  const [refreshing, setRefreshing] = useState(false);
+  const navigation = useNavigation();
 
   const sections = [
     {
@@ -48,28 +57,49 @@ const DashboardScreen: React.FC = () => {
     },
   ];
 
-  // 2. Lógica de busca de dados (Mantida igual)
-  useEffect(() => {
-    if (user) {
-      getMyTransactions(user?.uid).then((transactions) =>
-        setTransactions(transactions)
-      );
-      getBalance(user?.uid).then((balance) => setBalance(balance));
-      getSummary(user?.uid).then((summary) => setSummaryList(summary));
+  const onRefresh = useCallback(async () => {
+    if (!user) return;
+
+    setRefreshing(true);
+
+    try {
+      // Executa todas as buscas em paralelo
+      await Promise.all([
+        getMyTransactions(user.uid).then(setTransactions),
+        getSummary(user.uid).then(setSummaryList),
+        getUserInfo(user.uid).then((userData) => {
+          setBalance(userData?.balance || 0);
+          setName(userData?.name || "Usuário");
+        }),
+      ]);
+    } catch (error) {
+      console.error("Erro ao atualizar dados:", error);
+    } finally {
+      setRefreshing(false);
     }
   }, [user]);
 
+  // 2. Lógica de busca de dados (Mantida igual)
+  useEffect(() => {
+    if (user) {
+      getUserInfo(user.uid).then((userData) => {
+        setName(userData?.name || "Usuário");
+      });
+    }
+  }, [user]);
 
-
-
-
-  if (!user) {
-    return <View style={{ flex: 1, backgroundColor: PRIMARY_BLUE }} />; // Loading state simples
-  }
-
-  // Se não houver transações e já tiver carregado (assumindo que empty array + user logado = vazio)
-  // Idealmente teríamos um loading state explícito, mas usando transactions.length === 0 por enquanto
-
+  useFocusEffect(
+    useCallback(() => {
+      if (user) {
+        getMyTransactions(user!.uid).then(setTransactions);
+        getSummary(user!.uid).then(setSummaryList);
+        getUserInfo(user.uid).then((userData) => {
+          setBalance(userData?.balance || 0);
+          setName(userData?.name || "Usuário");
+        });
+      }
+    }, [])
+  );
 
   // 3. O Pulo do Gato: Header com Padding Dinâmico
   const renderSectionHeader = ({ section }: { section: SectionData }) => (
@@ -93,11 +123,16 @@ const DashboardScreen: React.FC = () => {
       >
         <Text style={DashboardScreenStyles.titleSection}>{section.title}</Text>
         {section.data.length > 0 && (
-          <Text style={DashboardScreenStyles.redirectSection}>Ver todas</Text>
+          <Text style={DashboardScreenStyles.redirectSection} onPress={onToGoExtrato}>Ver todas</Text>
         )}
       </View>
     </View>
   );
+
+  const onToGoExtrato = () => {
+    navigation.navigate("Transactions" as never);
+  }
+
 
   return (
     <LinearGradient
@@ -114,13 +149,19 @@ const DashboardScreen: React.FC = () => {
 
       <SectionList<ITransaction, SectionData>
         sections={sections}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor="#FFF" // Cor do spinner no iOS
+            colors={[PRIMARY_BLUE]} // Cor do spinner no Android
+          />
+        }
+        // 4. Header da Lista com Padding para não começar escondido
         ListHeaderComponent={
           <View style={{ paddingTop: insets.top + 20, paddingBottom: 20 }}>
             {/* 1. HEADER E SALDO */}
-            <SummaryCard
-              name={userData?.name || "Usuário"}
-              balance={formatCurrency(balance)}
-            />
+            <SummaryCard name={name} balance={balance} />
             {/* 2. GRAFICO MENSAL */}
             <ChartsWidget />
             {/* 2. CARTÕES FINANCEIROS */}
@@ -128,27 +169,20 @@ const DashboardScreen: React.FC = () => {
           </View>
         }
         renderSectionHeader={renderSectionHeader}
-        renderSectionFooter={({ section }) => {
-          if (section.data.length === 0) {
-            return (
-              <View
-                style={{
-                  backgroundColor: LIGHT_BLUE,
-                  padding: 20,
-                  alignItems: "center",
-                  borderBottomLeftRadius: 24,
-                  borderBottomRightRadius: 24,
-                  marginBottom: 24,
-                }}
-              >
-                <Text style={{ fontFamily: "Poppins_400Regular" }}>
-                  Não há transações para exibir.
-                </Text>
-              </View>
-            );
-          }
-          return <View style={{ paddingBottom: 45, backgroundColor: LIGHT_BLUE }}></View>;
-        }}
+        ListEmptyComponent={<View
+          style={{
+            backgroundColor: LIGHT_BLUE,
+            padding: 20,
+            alignItems: "center",
+            borderBottomLeftRadius: 24,
+            borderBottomRightRadius: 24,
+            marginBottom: 24,
+          }}
+        >
+          <Text style={{ fontFamily: "Poppins_400Regular" }}>
+            Não há transações para exibir.
+          </Text>
+        </View>}
         // 5. Item da lista com fundo branco/gelo para continuidade
         renderItem={({ item }) => (
           <View style={[TransactionWidgetStyles.container]}>

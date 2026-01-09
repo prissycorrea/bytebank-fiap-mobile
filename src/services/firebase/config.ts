@@ -1,7 +1,8 @@
 // src/services/firebase/config.ts
 import { initializeApp } from "firebase/app";
+import { Platform } from "react-native";
 // @ts-ignore
-import { initializeAuth, getReactNativePersistence } from "firebase/auth";
+import { initializeAuth, getReactNativePersistence, browserLocalPersistence } from "firebase/auth";
 import ReactNativeAsyncStorage from "@react-native-async-storage/async-storage";
 import { getFirestore } from "firebase/firestore";
 import {
@@ -29,8 +30,12 @@ if (!firebaseConfig.apiKey) {
   throw new Error("Chave de API do Firebase não encontrada no arquivo de configuração.");
 }
 
-const app = initializeApp(firebaseConfig);
+const persistence = Platform.OS === "web"
+  ? browserLocalPersistence
+  : getReactNativePersistence(ReactNativeAsyncStorage);
+
+export const app = initializeApp(firebaseConfig);
 export const firebaseConfigAuth = initializeAuth(app, {
-  persistence: getReactNativePersistence(ReactNativeAsyncStorage),
+  persistence,
 });
 export const db = getFirestore(app);
