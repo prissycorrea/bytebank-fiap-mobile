@@ -117,6 +117,22 @@ const DashboardScreen: React.FC = () => {
           setBalance(userData?.balance || 0);
           setName(userData?.name || "Usuário");
         });
+        getMonthlySummaries(user?.uid).then((monthlySummaries) => {
+          setMonthlySummaries(
+            monthlySummaries.map((item, index) => ({
+              ...item,
+              labelTextStyle:
+                index === currentMonthIndex
+                  ? {
+                      color: BLUE_SKY,
+                      fontWeight: "bold",
+                      marginLeft: -18,
+                      textAlign: "center",
+                    } // Destaque para o mês atual
+                  : undefined,
+            }))
+          );
+        });
       }
     }, [])
   );
