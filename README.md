@@ -15,6 +15,7 @@ bytebank-mobile/
 │   │   │   ├── 📂 Modal/
 │   │   │   ├── 📂 Loading/
 │   │   │   ├── 📂 Card/
+ │   │   │   ├── 📂 FinancialCard/
 │   │   │   └── 📄 index.ts
 │   │   ├── 📂 forms/                      # Componentes de formulário
 │   │   │   ├── 📂 LoginForm/
@@ -42,9 +43,12 @@ bytebank-mobile/
 │   │   │   └── 📄 index.ts
 │   │   ├── 📂 home/                       # Telas principais
 │   │   │   ├── 📂 DashboardScreen/
-│   │   │   ├── 📂 TransactionsScreen/
 │   │   │   ├── 📂 StatementScreen/
 │   │   │   └── 📄 index.ts
+│   │   ├── 📂 Transactions/               # Tela de Transações
+│   │   │   ├── 📂 TransactionsCreate/
+│   │   │   ├── 📂 TransactionsList/
+│   │   │   ├── 📂 TransactionsWidget/
 │   │   ├── 📂 profile/                    # Telas de perfil
 │   │   │   ├── 📂 ProfileScreen/
 │   │   │   └── 📄 index.ts
@@ -61,6 +65,8 @@ bytebank-mobile/
 │   │   │   ├── 📄 auth.ts
 │   │   │   ├── 📄 firestore.ts
 │   │   │   └── 📄 storage.ts
+│   │   ├── 📄 transactions.tsx
+│   │   ├── 📄 users.ts
 │   │   └── 📄 index.ts
 │   ├── 📂 hooks/                          # Custom hooks
 │   │   ├── 📄 useAuth.ts
@@ -111,6 +117,7 @@ bytebank-mobile/
 - **`@react-native-firebase/app`** - Core do Firebase para React Native
 - **`@react-native-firebase/auth`** - Autenticação de usuários (login, registro, logout)
 - **`@react-native-firebase/firestore`** - Banco de dados NoSQL para armazenar dados
+- **`@react-native-firebase/storage`** - Armazenamento de arquivos e comprovantes
 
 ### 🧭 Navegação
 - **`@react-navigation/native`** - Biblioteca principal de navegação
@@ -128,6 +135,7 @@ bytebank-mobile/
 - **`react-native-vector-icons`** - Ícones vetoriais para a aplicação
 - **`react-native-gesture-handler`** - Gerenciamento de gestos touch
 - **`react-native-reanimated`** - Animações performáticas
+- **`react-native-gifted-charts`** - Biblioteca de gráficos para visualização de dados
 
 ### 🛠️ Desenvolvimento
 - **`typescript`** - Superset do JavaScript com tipagem estática
