@@ -102,7 +102,7 @@ const TransactionCreate: React.FC = () => {
   // Interpolações para transformar 0->1 em estilos
   const translateX = slideAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: [0, 100], // Aproximação: assume que o container ~200px width e o botão ~100px.
+    outputRange: ["0%", "100%"], // Aproximação: assume que o container ~200px width e o botão ~100px.
     // Melhor seria usar porcentagem se o layout permitir: ['0%', '100%']
     // Vamos tentar porcentagem que é o que o código original (reanimated) parecia usar ("100%")
   });
@@ -515,6 +515,9 @@ const TransactionCreate: React.FC = () => {
                 )}
               </TouchableOpacity>
             </>
+          }
+          ListFooterComponent={
+            <View style={{ height: 100, backgroundColor: LIGHT_BLUE }} />
           }
         ></FlatList>
       </KeyboardAvoidingView>

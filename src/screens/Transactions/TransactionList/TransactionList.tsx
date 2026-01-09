@@ -129,6 +129,9 @@ const TransactionListScreen: React.FC = () => {
           </View>
         )}
         ListHeaderComponent={<ListHeader />}
+        ListFooterComponent={
+          <View style={{ height: 50, backgroundColor: LIGHT_BLUE }} />
+        }
         ListEmptyComponent={
           <View
             style={{

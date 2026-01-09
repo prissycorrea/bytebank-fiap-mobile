@@ -28,6 +28,24 @@ export const TabNavigator = () => {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
+
+        // 1. Forçamos o estilo do container de cada aba
+        tabBarItemStyle: {
+          justifyContent: "center",
+          alignItems: "center",
+          height: 40, // Alinhado com a altura da sua tabBar
+          paddingTop: 0,
+          paddingBottom: 0,
+        },
+
+        // // 2. Garantimos que o estilo do label (mesmo oculto) não ocupe espaço
+        tabBarLabelStyle: {
+          marginBottom: 0,
+          paddingBottom: 0,
+          display: "none", // Força o sumiço do label no motor de renderização
+        },
+
+        // 3. Estilo da barra
         tabBarStyle: [
           styles.tabBar,
           {
@@ -130,21 +148,25 @@ const styles = StyleSheet.create({
   tabBar: {
     position: "absolute",
     height: 64,
-    marginHorizontal: 100,
+    marginHorizontal:100,
+    left: "15%",
+    right: "15%",
     borderRadius: 35,
     backgroundColor: WHITE,
     borderTopWidth: 0,
-    // Sombra para Android
+
+    // ALINHAMENTO INTERNO MANUAL
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around", // Distribui os ícones igualmente
+    paddingBottom: 0,
+
+    // Sombras...
     elevation: 8,
-    // Sombra para iOS
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
-    display: "flex",
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
   },
   plusButton: {
     width: 52,

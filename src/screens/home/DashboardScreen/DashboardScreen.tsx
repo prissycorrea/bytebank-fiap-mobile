@@ -192,6 +192,7 @@ const DashboardScreen: React.FC = () => {
         stickySectionHeadersEnabled={true}
         keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
+        ListFooterComponent={<View style={{ height: 100, backgroundColor: LIGHT_BLUE }} />}
       />
     </LinearGradient>
   );
