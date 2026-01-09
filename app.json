@@ -11,9 +11,7 @@
       "resizeMode": "contain",
       "backgroundColor": "#1E3A5F"
     },
-    "assetBundlePatterns": [
-      "**/*"
-    ],
+    "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.bytebank.mobile"
@@ -30,7 +28,14 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-font"
+      "expo-font",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "O ByteBank precisa acessar suas fotos para anexar comprovantes.",
+          "cameraPermission": "O ByteBank precisa acessar sua câmera para tirar fotos dos comprovantes."
+        }
+      ]
     ]
   }
 }

@@ -46,4 +46,14 @@ export const TransactionCreateStyle = StyleSheet.create({
   toggleSwitchActiveText: {
     color: "#FFFFFF",
   },
+  anexoOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F8F9FA',
+    padding: 15,
+    borderRadius: 12,
+    marginBottom: 10,
+    borderWidth: 1,
+    borderColor: '#E9ECEF',
+  },
 });

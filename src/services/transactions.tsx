@@ -232,20 +232,27 @@ export const generateCategoriesList = async () => {
 };
 
 export const uploadFile = async (uri: string, userId: string): Promise<string> => {
-  const blob: any = await new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    xhr.onload = () => resolve(xhr.response);
-    xhr.onerror = () => reject(new TypeError("Network request failed"));
-    xhr.responseType = "blob";
-    xhr.open("GET", uri, true);
-    xhr.send(null);
-  });
+  try {
+    // Busca a imagem e converte para blob
+    const response = await fetch(uri);
+    const blob = await response.blob();
 
-  const fileRef = ref(storage, `comprovantes/${userId}/${Date.now()}`);
-  await uploadBytes(fileRef, blob);
+    // Cria a referência com extensão .jpg
+    const fileRef = ref(storage, `comprovantes/${userId}/${Date.now()}.jpg`);
 
-  // Retorna a URL pública
-  return await getDownloadURL(fileRef);
+    // Upload com metadados explicitos
+    const uploadResult = await uploadBytes(fileRef, blob, {
+      contentType: 'image/jpeg',
+    });
+
+    // Pega a URL
+    const downloadUrl = await getDownloadURL(uploadResult.ref);
+    
+    return downloadUrl;
+  } catch (error) {
+    console.error("Erro detalhado no uploadFile:", error);
+    throw error;
+  }
 };
 
 // Função auxiliar para converter "2025_01" em "Jan"
