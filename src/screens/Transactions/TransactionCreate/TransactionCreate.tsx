@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from "react";
+import React, { useState, useCallback } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
@@ -10,13 +10,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   FlatList,
+  Animated,
 } from "react-native";
 import { TransactionCreateStyle } from "./TransactionCreate.styles";
 import { SafeAreaView } from "react-native-safe-area-context";
-import Animated, {
-  useAnimatedStyle,
-  withTiming,
-} from "react-native-reanimated";
 import { DANGER, SUCCESS } from "../../../utils/colors";
 import { RegisterScreenStyles } from "../../auth/RegisterScreen/RegisterScreen.styles";
 import AutocompleteCategories from "../../../components/forms/AutocompleteCategories/AutocompleteCategories";
@@ -41,6 +38,10 @@ const TransactionCreate: React.FC = () => {
   const [categoriaSelecionada, setCategoriaSelecionada] = useState<any>(null);
   const [image, setImage] = useState<string | null>(null);
 
+  // Valor animado (0 = Income, 1 = Expense)
+  // Usamos useRef para persistir o valor entre renderizações
+  const slideAnim = React.useRef(new Animated.Value(0)).current;
+
   // Lógica para resetar os campos sempre que a tela ganhar foco
   useFocusEffect(
     useCallback(() => {
@@ -49,24 +50,38 @@ const TransactionCreate: React.FC = () => {
       setDescription("");
       setCategoriaSelecionada(null);
       setTransactionType("INCOME");
+      // Resetar animação
+      slideAnim.setValue(0);
     }, [])
   );
 
-  const animatedStyle = useAnimatedStyle(() => {
-    return {
-      transform: [
-        {
-          translateX: withTiming(transactionType === "INCOME" ? 0 : "100%", {
-            duration: 250,
-          }),
-        },
-      ],
-      // Opcional: mudar a cor se for despesa (ex: vermelho)
-      backgroundColor: withTiming(
-        transactionType === "INCOME" ? SUCCESS : DANGER
-      ),
-    };
+  // Dispara a animação quando o tipo muda
+  React.useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: transactionType === "INCOME" ? 0 : 1,
+      duration: 250,
+      useNativeDriver: false, // Necessário false para width/color em algumas versões ou layouts complexos
+    }).start();
+  }, [transactionType]);
+
+  // Interpolações para transformar 0->1 em estilos
+  const translateX = slideAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0, 100], // Aproximação: assume que o container ~200px width e o botão ~100px.
+    // Melhor seria usar porcentagem se o layout permitir: ['0%', '100%']
+    // Vamos tentar porcentagem que é o que o código original (reanimated) parecia usar ("100%")
+    outputRange: ['0%', '100%']
   });
+
+  const backgroundColor = slideAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: [SUCCESS, DANGER]
+  });
+
+  const animatedStyle = {
+    transform: [{ translateX }],
+    backgroundColor,
+  };
 
   const handleTransactionCreate = async () => {
     if (!price || !categoriaSelecionada) {
@@ -169,7 +184,7 @@ const TransactionCreate: React.FC = () => {
                       style={[
                         TransactionCreateStyle.toggleSwitchOptionText,
                         transactionType === "INCOME" &&
-                          TransactionCreateStyle.toggleSwitchActiveText,
+                        TransactionCreateStyle.toggleSwitchActiveText,
                       ]}
                     >
                       Receita
@@ -184,7 +199,7 @@ const TransactionCreate: React.FC = () => {
                       style={[
                         TransactionCreateStyle.toggleSwitchOptionText,
                         transactionType === "EXPENSE" &&
-                          TransactionCreateStyle.toggleSwitchActiveText,
+                        TransactionCreateStyle.toggleSwitchActiveText,
                       ]}
                     >
                       Despesa
