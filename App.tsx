@@ -60,30 +60,11 @@ const AppContent: React.FC = () => {
   const [checkingTransactions, setCheckingTransactions] = useState(false);
   const [initialRoute, setInitialRoute] = useState("MainTabs");
 
-  // Novo efeito para verificar transações quando o usuário estiver autenticado
   useEffect(() => {
-    if (isAuthenticated && !authLoading) { // Só verifica se terminou o loading do auth
+    if (isAuthenticated && !authLoading) {
       setCheckingTransactions(true);
-      // Assumindo que useAuth fornece o uid no user object
-      // useAuth retorna { user, ... }
-      // Precisamos pegar o user do hook useAuth, que já foi chamado lá em cima
-      // const { user } = useAuth(); // Já chamado na linha 29
-      // Mas user pode ser null se isAuthenticated for false, mas aqui checamos isAuthenticated.
-      // Typescript pode reclamar, então checamos user.
-      // O hook useAuth retorna user como User | null.
-
-      // CORREÇÃO: O user do hook é pego na linha 29, mas precisamos garantir que ele esteja atualizado.
-      // Como isAuthenticated é true, user deve existir.
-
-      // Pequeno detalhe: getMyTransactions precisa do UID.
-      // Vou usar uma função async dentro do effect.
       const checkData = async () => {
         try {
-          // user pode ser null aqui se o state ainda não atualizou, mas isAuthenticated diz que sim.
-          // Vamos dar um bypass seguro.
-          // Na verdade, useAuth já retornou o user.
-          // Mas para garantir, vamos pegar o user atual do contexto ou confiar na var user.
-          // Vamos usar a variavel user do escopo do componente.
           if (user?.uid) {
             const transactions = await getMyTransactions(user.uid);
             if (transactions.length === 0) {
@@ -124,16 +105,12 @@ const AppContent: React.FC = () => {
     return <LoginScreen onRegister={() => setIsRegistering(true)} />;
   }
 
-  // Esse bloco aqui embaixo era redundante com o de cima, pode simplificar assim:
-  // Se chegou aqui, não está autenticado e não completou onboarding (ou completou e caiu no if acima)
-
   // 4. Caso contrário, mostra o onboarding
   return <OnboardingScreen onComplete={handleOnboardingComplete} />;
 };
 
 export default function App() {
   return (
-    // <--- 2. IMPORTANTE: Envolva tudo com o SafeAreaProvider
     <SafeAreaProvider>
       <AuthProvider>
         <SnackbarProvider>

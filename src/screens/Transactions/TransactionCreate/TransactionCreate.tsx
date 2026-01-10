@@ -2,7 +2,6 @@ import React, { useState, useCallback } from "react";
 import {
   KeyboardAvoidingView,
   Platform,
-  ScrollView,
   Text,
   View,
   Pressable,
@@ -14,9 +13,7 @@ import {
   ActionSheetIOS,
   Alert,
   Modal,
-  Button,
   Image,
-  Linking,
 } from "react-native";
 import { TransactionCreateStyle } from "./TransactionCreate.styles";
 import { SafeAreaView } from "react-native-safe-area-context";
@@ -39,7 +36,7 @@ import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
 const TransactionCreate: React.FC = () => {
   const { user } = useAuth();
   const [loading, setLoading] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false); // Estado para a tela de sucesso
+  const [isSuccess, setIsSuccess] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const navigation = useNavigation();
 
@@ -52,7 +49,6 @@ const TransactionCreate: React.FC = () => {
   const [image, setImage] = useState<string | null>(null);
 
   // Valor animado (0 = Income, 1 = Expense)
-  // Usamos useRef para persistir o valor entre renderizações
   const slideAnim = React.useRef(new Animated.Value(0)).current;
 
   // Lógica para resetar os campos sempre que a tela ganhar foco
@@ -73,19 +69,17 @@ const TransactionCreate: React.FC = () => {
     Animated.timing(slideAnim, {
       toValue: transactionType === "INCOME" ? 0 : 1,
       duration: 250,
-      useNativeDriver: false, // Necessário false para width/color em algumas versões ou layouts complexos
+      useNativeDriver: false,
     }).start();
   }, [transactionType]);
 
   React.useEffect(() => {
     const checkPendingResult = async () => {
-      // Pequena pausa para garantir que o sistema liberou o arquivo
       await new Promise((resolve) => setTimeout(resolve, 500));
       const result = await ImagePicker.getPendingResultAsync();
 
       console.log("useEffect: ", result);
 
-      // Verificamos se o resultado existe e se ele NÃO é um erro (checando se existe 'assets')
       if (
         result &&
         "assets" in result &&
@@ -99,12 +93,9 @@ const TransactionCreate: React.FC = () => {
     checkPendingResult();
   }, []);
 
-  // Interpolações para transformar 0->1 em estilos
   const translateX = slideAnim.interpolate({
     inputRange: [0, 1],
-    outputRange: ["0%", "100%"], // Aproximação: assume que o container ~200px width e o botão ~100px.
-    // Melhor seria usar porcentagem se o layout permitir: ['0%', '100%']
-    // Vamos tentar porcentagem que é o que o código original (reanimated) parecia usar ("100%")
+    outputRange: ["0%", "100%"],
   });
 
   const backgroundColor = slideAnim.interpolate({
@@ -135,13 +126,12 @@ const TransactionCreate: React.FC = () => {
         price:
           transactionType === "INCOME" ? parseFloat(price) : -parseFloat(price),
         description,
-        category: categoriaSelecionada.nome, // Certifique-se de salvar a string ou objeto conforme seu banco
+        category: categoriaSelecionada.nome,
         attachmentUrl: imageUrl,
       });
 
-      setIsSuccess(true); // Ativa a tela de sucesso após criar
+      setIsSuccess(true);
     } catch (error: any) {
-      // Isso vai mostrar exatamente o que o Firebase respondeu
       if (error.serverResponse) {
         console.log("RESPOSTA DO SERVIDOR:", error.serverResponse);
       }
@@ -154,69 +144,30 @@ const TransactionCreate: React.FC = () => {
   const resetForm = () => {
     setPrice("");
     setDescription("");
+    setImage(null);
     setCategoriaSelecionada(null);
     setTransactionType("INCOME");
-    setIsSuccess(false); // Isso faz o formulário reaparecer
+    setIsSuccess(false);
   };
 
-  // Se estiver em modo de sucesso, renderiza a SuccessScreen
   if (isSuccess) {
     return (
       <SuccessScreen
         successProps={{ title: "Sucesso!" }}
-        onAddMore={resetForm} // Reseta isSuccess e o useFocusEffect limpa o resto
+        onAddMore={resetForm}
         onGoHome={() => navigation.navigate("Home" as never)}
       />
     );
   }
 
   const salvarCategoria = (categoria: any) => {
-    setCategoriaSelecionada(categoria); // Agora o pai tem o dado!
-  };
-
-  const takePhoto = async () => {
-    try {
-      // Pede permissão de Câmera e Galeria (necessário para o Android salvar o temporário)
-      const cameraPerm = await ImagePicker.requestCameraPermissionsAsync();
-      const libraryPerm =
-        await ImagePicker.requestMediaLibraryPermissionsAsync();
-
-      if (cameraPerm.status !== "granted" || libraryPerm.status !== "granted") {
-        Alert.alert(
-          "Permissão Necessária",
-          "Precisamos de acesso à câmera e galeria para anexar fotos.",
-          [
-            {
-              text: "Abrir Configurações",
-              onPress: () => Linking.openSettings(),
-            },
-            { text: "Cancelar" },
-          ]
-        );
-        return;
-      }
-
-      // DISPARO REAL DA CÂMERA (estava faltando no seu código)
-      const result = await ImagePicker.launchCameraAsync({
-        mediaTypes: "images",
-        quality: 0.1,
-      });
-
-      console.log("Resultado da Câmera:", result);
-
-      if (!result.canceled && result.assets && result.assets.length > 0) {
-        setImage(result.assets[0].uri);
-      }
-    } catch (error) {
-      console.error("Erro ao abrir a câmera:", error);
-      alert("Não foi possível abrir a câmera.");
-    }
+    setCategoriaSelecionada(categoria);
   };
 
   const pickImage = async () => {
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: "images",
-      quality: 0.1, // Reduz qualidade para o upload ser mais rápido
+      quality: 0.1,
     });
 
     if (!result.canceled) {
@@ -228,39 +179,6 @@ const TransactionCreate: React.FC = () => {
     setImage(null);
   };
 
-  const showImageOptions = () => {
-    const options = ["Tirar Foto", "Escolher da Galeria", "Cancelar"];
-    const cancelButtonIndex = 2;
-
-    if (Platform.OS === "ios") {
-      // No iOS usa o visual nativo de baixo
-      ActionSheetIOS.showActionSheetWithOptions(
-        {
-          options,
-          cancelButtonIndex,
-          title: "Selecionar Comprovante",
-        },
-        (buttonIndex) => {
-          if (buttonIndex === 0) takePhoto();
-          else if (buttonIndex === 1) pickImage();
-        }
-      );
-    } else {
-      // No Android o padrão é um Alert centralizado ou você pode usar o ActionSheet
-      // mas o Alert.alert com botões é o mais comum e estável nativamente
-      Alert.alert(
-        "Selecionar Comprovante",
-        "Escolha uma opção:",
-        [
-          { text: "📸 Tirar Foto", onPress: takePhoto },
-          { text: "🖼️ Galeria", onPress: pickImage },
-          { text: "Cancelar", style: "cancel" },
-        ],
-        { cancelable: true }
-      );
-    }
-  };
-
   return (
     <SafeAreaView style={TransactionCreateStyle.container}>
       <KeyboardAvoidingView
@@ -270,8 +188,10 @@ const TransactionCreate: React.FC = () => {
         }}
       >
         <FlatList
-          data={[]} // Lista vazia
+          data={[]}
           renderItem={null}
+          showsVerticalScrollIndicator={false}
+
           ListHeaderComponent={
             <>
               <View style={TransactionCreateStyle.mainInput}>
@@ -321,7 +241,9 @@ const TransactionCreate: React.FC = () => {
               </View>
 
               <View style={TransactionCreateStyle.mainInput}>
-                <Text style={TransactionCreateStyle.labelInput}>Valor</Text>
+                <Text style={TransactionCreateStyle.labelInput}>
+                  Valor <Text style={{ color: "red" }}>*</Text>
+                </Text>
                 <TextInput
                   style={RegisterScreenStyles.input}
                   placeholder="R$ 0,00"
@@ -345,7 +267,9 @@ const TransactionCreate: React.FC = () => {
               </View>
 
               <View style={TransactionCreateStyle.mainInput}>
-                <Text style={TransactionCreateStyle.labelInput}>Categoria</Text>
+                <Text style={TransactionCreateStyle.labelInput}>
+                  Categoria <Text style={{ color: "red" }}>*</Text>
+                </Text>
                 <AutocompleteCategories
                   aoSelecionar={salvarCategoria}
                 ></AutocompleteCategories>
@@ -372,16 +296,16 @@ const TransactionCreate: React.FC = () => {
                       onPress={removeImage}
                       style={{
                         position: "absolute",
-                        top: -20, // Ajustado para flutuar um pouco mais sobre a borda
+                        top: -20,
                         right: 9,
                         zIndex: 10,
                         backgroundColor: "#FFFFFF",
-                        borderWidth: 3, // 5 pode ficar muito grosso, 3 costuma ser o ideal
-                        borderColor: "#E3F2FD", // Substitua pelo seu LIGHT_BLUE
+                        borderWidth: 3,
+                        borderColor: LIGHT_BLUE,
                         borderRadius: 100,
                         padding: 4,
-                        elevation: 5, // Sombra para o Android
-                        shadowColor: "#000", // Sombra para o iOS
+                        elevation: 5,
+                        shadowColor: "#000",
                         shadowOffset: { width: 0, height: 2 },
                         shadowOpacity: 0.2,
                         shadowRadius: 2,
@@ -410,7 +334,7 @@ const TransactionCreate: React.FC = () => {
                     style={[
                       RegisterScreenStyles.input,
                       { justifyContent: "center" },
-                    ]} // Use seu estilo aqui
+                    ]}
                     onPress={() => setModalVisible(true)}
                   >
                     <Text style={{ color: "#999" }}>
@@ -430,8 +354,8 @@ const TransactionCreate: React.FC = () => {
                 <View
                   style={{
                     flex: 1,
-                    backgroundColor: "rgba(0,0,0,0.5)", // Escurece o fundo
-                    justifyContent: "flex-end", // Empurra o conteúdo para baixo
+                    backgroundColor: "rgba(0,0,0,0.5)",
+                    justifyContent: "flex-end",
                   }}
                 >
                   {/* Toque fora para fechar */}
@@ -467,7 +391,7 @@ const TransactionCreate: React.FC = () => {
                     <TouchableOpacity
                       style={TransactionCreateStyle.anexoOption}
                       onPress={() => {
-                        pickImage(); // Sua função da galeria
+                        pickImage();
                         setModalVisible(false);
                       }}
                     >

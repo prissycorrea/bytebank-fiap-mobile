@@ -16,9 +16,7 @@ import TransactionCreate from "../screens/Transactions/TransactionCreate/Transac
 import TransactionList from "../screens/Transactions/TransactionList/TransactionList";
 
 const Tab = createBottomTabNavigator();
-const Placeholder = () => (
-  <View style={{ flex: 1, backgroundColor: "#F0F4F8" }} />
-);
+
 export const TabNavigator = () => {
   const inserts = useSafeAreaInsets();
 
@@ -28,24 +26,18 @@ export const TabNavigator = () => {
       screenOptions={{
         headerShown: false,
         tabBarShowLabel: false,
-
-        // 1. Forçamos o estilo do container de cada aba
         tabBarItemStyle: {
           justifyContent: "center",
           alignItems: "center",
-          height: 40, // Alinhado com a altura da sua tabBar
+          height: 40,
           paddingTop: 0,
           paddingBottom: 0,
         },
-
-        // // 2. Garantimos que o estilo do label (mesmo oculto) não ocupe espaço
         tabBarLabelStyle: {
           marginBottom: 0,
           paddingBottom: 0,
-          display: "none", // Força o sumiço do label no motor de renderização
+          display: "none",
         },
-
-        // 3. Estilo da barra
         tabBarStyle: [
           styles.tabBar,
           {
@@ -64,19 +56,19 @@ export const TabNavigator = () => {
           headerLeft: () => (
             <TouchableOpacity
               style={{ marginLeft: 20 }}
-              onPress={() => navigation.navigate("Home")} // Volta para a aba Home
+              onPress={() => navigation.navigate("Home")}
             >
               <Ionicons name="chevron-back" size={28} color="#1D3557" />
             </TouchableOpacity>
           ),
           headerStyle: {
-            elevation: 0, // Remove sombra no Android
-            shadowOpacity: 0, // Remove sombra no iOS
-            borderBottomWidth: 0, // Remove linha no iOS
+            elevation: 0,
+            shadowOpacity: 0,
+            borderBottomWidth: 0,
             backgroundColor: LIGHT_BLUE,
           },
           headerTitleStyle: {
-            fontFamily: "Poppins_600SemiBold", // Usa a fonte que você já carregou
+            fontFamily: "Poppins_600SemiBold",
             fontSize: 20,
             fontWeight: "bold",
             color: PRIMARY_BLUE,
@@ -113,19 +105,19 @@ export const TabNavigator = () => {
           headerLeft: () => (
             <TouchableOpacity
               style={{ marginLeft: 20 }}
-              onPress={() => navigation.navigate("Home")} // Volta para a aba Home
+              onPress={() => navigation.navigate("Home")}
             >
               <Ionicons name="chevron-back" size={28} color="#1D3557" />
             </TouchableOpacity>
           ),
           headerStyle: {
-            elevation: 0, // Remove sombra no Android
-            shadowOpacity: 0, // Remove sombra no iOS
-            borderBottomWidth: 0, // Remove linha no iOS
+            elevation: 0,
+            shadowOpacity: 0,
+            borderBottomWidth: 0,
             backgroundColor: LIGHT_BLUE,
           },
           headerTitleStyle: {
-            fontFamily: "Poppins_600SemiBold", // Usa a fonte que você já carregou
+            fontFamily: "Poppins_600SemiBold",
             fontSize: 20,
             fontWeight: "bold",
             color: PRIMARY_BLUE,
@@ -154,14 +146,10 @@ const styles = StyleSheet.create({
     borderRadius: 35,
     backgroundColor: WHITE,
     borderTopWidth: 0,
-
-    // ALINHAMENTO INTERNO MANUAL
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "space-around", // Distribui os ícones igualmente
+    justifyContent: "space-around",
     paddingBottom: 0,
-
-    // Sombras...
     elevation: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },

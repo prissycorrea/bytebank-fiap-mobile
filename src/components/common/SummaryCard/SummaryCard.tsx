@@ -30,7 +30,6 @@ const SummaryCard: React.FC<{ name: string; balance: number }> = ({
       <View style={SummaryCardStyles.headerRow}>
         <View style={SummaryCardStyles.headerProfile}>
           {/* Ícone de Usuário */}
-          {/* <MaterialIcons name="account-circle" size={40} color="#fff" /> */}
           <TouchableOpacity
             style={SummaryCardStyles.headerAvatar}
             onPress={() => setShowMenu(true)}
@@ -92,7 +91,6 @@ const SummaryCard: React.FC<{ name: string; balance: number }> = ({
             size={24}
             color={PRIMARY_BLUE}
           />
-          {/* <MaterialIcons name="keyboard-arrow-right" size={18} color={PRIMARY_BLUE} /> */}
         </TouchableOpacity>
       </View>
     </View>

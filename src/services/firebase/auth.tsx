@@ -79,11 +79,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
       let errorMessage = "E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.";
 
-      // Tenta pegar o código do erro de diferentes formas
       const errorCode = error?.code || error?.errorCode || (error?.message?.includes('auth/') ? error.message.split('auth/')[1]?.split(')')[0] : null);
       const errorMessageText = error?.message || '';
 
-      // Verifica se a mensagem contém indicações de usuário não encontrado
       if (errorMessageText.toLowerCase().includes('user-not-found') || 
           errorMessageText.toLowerCase().includes('there is no user record')) {
         errorMessage = "Este e-mail não está cadastrado. Que tal criar uma conta? Clique em 'Cadastre-se' abaixo.";
@@ -113,7 +111,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             errorMessage = "E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.";
             break;
           default:
-            // Se não reconhecer o código, usa mensagem genérica amigável
             errorMessage = "E-mail ou senha incorretos. Verifique suas credenciais e tente novamente.";
         }
       }

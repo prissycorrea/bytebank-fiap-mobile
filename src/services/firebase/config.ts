@@ -1,4 +1,3 @@
-// src/services/firebase/config.ts
 import { initializeApp } from "firebase/app";
 import { Platform } from "react-native";
 // @ts-ignore
@@ -14,8 +13,6 @@ import {
   FIREBASE_APP_ID,
 } from "@env";
 
-// Cole a configuração do seu projeto Firebase aqui
-// Substitua este objeto pelo que você copiou do Console do Firebase
 const firebaseConfig = {
   apiKey: FIREBASE_API_KEY,
   authDomain: FIREBASE_AUTH_DOMAIN,
@@ -25,7 +22,6 @@ const firebaseConfig = {
   appId: FIREBASE_APP_ID,
 };
 
-// Teste de Sanidade: Isso vai garantir que o arquivo está sendo lido.
 if (!firebaseConfig.apiKey) {
   throw new Error("Chave de API do Firebase não encontrada no arquivo de configuração.");
 }

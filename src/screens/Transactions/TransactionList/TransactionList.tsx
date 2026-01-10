@@ -21,7 +21,6 @@ import { RegisterScreenStyles } from "../../auth/RegisterScreen/RegisterScreen.s
 import { LIGHT_BLUE } from "../../../utils/colors";
 import { useFocusEffect } from "@react-navigation/native";
 import { getMyTransactions } from "../../../services/transactions";
-import { normalize } from "../../../utils";
 
 const TransactionListScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
@@ -48,11 +47,7 @@ const TransactionListScreen: React.FC = () => {
     setRefreshing(false);
   };
 
-  // Filtro de busca local (opcional)
-  // Filtro de busca local Combinado (Texto + Chip)
   const filteredTransactions = transactions.filter((t) => {
-    // Se o filtro for vazio ou "Todas", ele ignora essa parte.
-    // Caso contrário, verifica se a categoria é exatamente a do chip.
     const matchesCategory =
       categoriaFiltro === "" || t.category === categoriaFiltro;
 

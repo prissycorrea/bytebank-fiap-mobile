@@ -16,11 +16,10 @@ const collectionRef = collection(db, "categories");
 
 const AutocompleteCategories = ({ aoSelecionar }: any) => {
   const [query, setQuery] = useState("");
-  const [dadosFull, setDadosFull] = useState<any>([]); // Lista original do Firebase
+  const [dadosFull, setDadosFull] = useState<any>([]);
   const [dadosFiltrados, setDadosFiltrados] = useState([]);
   const [showList, setShowList] = useState(false);
 
-  // 1. Busca os dados do Firebase ao carregar o componente
   useEffect(() => {
     const fetchData = async () => {
       const querySnapshot = await getDocs(collectionRef);
@@ -33,7 +32,6 @@ const AutocompleteCategories = ({ aoSelecionar }: any) => {
     fetchData();
   }, []);
 
-  // 2. Função de Filtro (Autocomplete)
   const handleSearch = (text: any) => {
     setQuery(text);
     if (text.length > 0) {
@@ -47,7 +45,6 @@ const AutocompleteCategories = ({ aoSelecionar }: any) => {
     }
   };
 
-  // 3. Selecionar item da lista
   const selecionarItem = (item: any) => {
     setQuery(item.nome);
     setShowList(false);
@@ -103,8 +100,8 @@ const styles = StyleSheet.create({
     maxHeight: 200,
     borderRadius: 8,
     marginTop: 2,
-    elevation: 3, // Sombra no Android
-    shadowColor: "#000", // Sombra no iOS
+    elevation: 3,
+    shadowColor: "#000",
   },
   item: {
     padding: 15,

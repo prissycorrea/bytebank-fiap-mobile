@@ -40,7 +40,6 @@ type SectionData = {
 };
 
 const DashboardScreen: React.FC = () => {
-  // 1. Hook para pegar a altura da barra de status (ex: 47px no iPhone)
   const insets = useSafeAreaInsets();
   const currentMonthIndex = new Date().getMonth();
 
@@ -67,7 +66,6 @@ const DashboardScreen: React.FC = () => {
     setRefreshing(true);
 
     try {
-      // Executa todas as buscas em paralelo
       await Promise.all([
         getMyTransactions(user.uid).then(setTransactions),
         getSummary(user.uid).then(setSummaryList),
@@ -86,7 +84,7 @@ const DashboardScreen: React.FC = () => {
                       fontWeight: "bold",
                       marginLeft: -18,
                       textAlign: "center",
-                    } // Destaque para o mês atual
+                    }
                   : undefined,
             }))
           );
@@ -99,7 +97,6 @@ const DashboardScreen: React.FC = () => {
     }
   }, [user]);
 
-  // 2. Lógica de busca de dados (Mantida igual)
   useEffect(() => {
     if (user) {
       getUserInfo(user.uid).then((userData) => {
@@ -128,7 +125,7 @@ const DashboardScreen: React.FC = () => {
                       fontWeight: "bold",
                       marginLeft: -18,
                       textAlign: "center",
-                    } // Destaque para o mês atual
+                    }
                   : undefined,
             }))
           );
@@ -137,12 +134,11 @@ const DashboardScreen: React.FC = () => {
     }, [])
   );
 
-  // 3. O Pulo do Gato: Header com Padding Dinâmico
   const renderSectionHeader = ({ section }: { section: SectionData }) => (
     <View
       style={{
-        backgroundColor: LIGHT_BLUE, // Cor de fundo para "tapar" a lista rolando
-        paddingTop: 1, // O espaço exato do relógio/notch
+        backgroundColor: LIGHT_BLUE,
+        paddingTop: 1,
         borderTopRightRadius: 28,
         borderTopLeftRadius: 28,
       }}
@@ -193,11 +189,10 @@ const DashboardScreen: React.FC = () => {
           <RefreshControl
             refreshing={refreshing}
             onRefresh={onRefresh}
-            tintColor="#FFF" // Cor do spinner no iOS
-            colors={[PRIMARY_BLUE]} // Cor do spinner no Android
+            tintColor="#FFF"
+            colors={[PRIMARY_BLUE]}
           />
         }
-        // 4. Header da Lista com Padding para não começar escondido
         ListHeaderComponent={
           <View style={{ paddingTop: insets.top + 20, paddingBottom: 20 }}>
             {/* 1. HEADER E SALDO */}
@@ -225,7 +220,6 @@ const DashboardScreen: React.FC = () => {
             </Text>
           </View>
         }
-        // 5. Item da lista com fundo branco/gelo para continuidade
         renderItem={({ item }) => (
           <View style={[TransactionWidgetStyles.container]}>
             <TransactionItem transaction={item} />
