@@ -1,6 +1,7 @@
 import {
   addDoc,
   doc,
+  getDoc,
   getFirestore,
   increment,
   where,
@@ -14,12 +15,7 @@ import { stackDataItem } from "react-native-gifted-charts";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import { BLUE_SKY, WHITE } from "../utils/colors";
 import { getUserInfo } from "./users";
-import {
-  ref,
-  uploadBytes,
-  getDownloadURL,
-  getStorage
-} from "firebase/storage";
+import { ref, uploadBytes, getDownloadURL, getStorage } from "firebase/storage";
 
 const storage = getStorage(app);
 const collectionRef = collection(db, "transactions");
@@ -115,6 +111,33 @@ export const createTransaction = async (
   }
 };
 
+export const getTransactionById = async (
+  id: string
+): Promise<ITransaction | null> => {
+  try {
+    // 1. Cria uma referência para o documento específico dentro da coleção "transactions"
+    const docRef = doc(db, "transactions", id);
+
+    // 2. Executa a busca
+    const docSnap = await getDoc(docRef);
+
+    // 3. Verifica se o documento existe
+    if (docSnap.exists()) {
+      // Retornamos os dados formatados com o ID incluso
+      return {
+        id: docSnap.id,
+        ...docSnap.data(),
+      } as ITransaction;
+    } else {
+      console.warn("Nenhuma transação encontrada com o ID:", id);
+      return null;
+    }
+  } catch (error) {
+    console.error("Erro ao buscar transação por ID:", error);
+    throw error;
+  }
+};
+
 export const getSummary = async (
   userId: string
 ): Promise<FinancialCardProps[]> => {
@@ -163,7 +186,7 @@ export const getMonthlySummaries = async (userId: string) => {
     const formattedData: stackDataItem[] = querySnapshot.docs.map((doc) => {
       const data = doc.data();
       const docId = doc.id;
-      
+
       const label = formatMonthLabel(docId);
 
       return {
@@ -205,7 +228,10 @@ export const generateCategoriesList = async () => {
   }
 };
 
-export const uploadFile = async (uri: string, userId: string): Promise<string> => {
+export const uploadFile = async (
+  uri: string,
+  userId: string
+): Promise<string> => {
   try {
     const response = await fetch(uri);
     const blob = await response.blob();
@@ -213,11 +239,11 @@ export const uploadFile = async (uri: string, userId: string): Promise<string> =
     const fileRef = ref(storage, `comprovantes/${userId}/${Date.now()}.jpg`);
 
     const uploadResult = await uploadBytes(fileRef, blob, {
-      contentType: 'image/jpeg',
+      contentType: "image/jpeg",
     });
 
     const downloadUrl = await getDownloadURL(uploadResult.ref);
-    
+
     return downloadUrl;
   } catch (error) {
     console.error("Erro detalhado no uploadFile:", error);
