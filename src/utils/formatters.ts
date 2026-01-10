@@ -14,7 +14,7 @@ export function formatCurrency(
   });
 }
 
-export function formatDate(date: Date | null): string {
+export function formatDate(date: any): string {
   if (!date) return "";
 
   const day = date.getDate();

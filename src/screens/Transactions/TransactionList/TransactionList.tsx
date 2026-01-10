@@ -19,12 +19,12 @@ import { ITransaction } from "../../../types/transaction";
 import { TransactionCreateStyle } from "../TransactionCreate/TransactionCreate.styles";
 import { RegisterScreenStyles } from "../../auth/RegisterScreen/RegisterScreen.styles";
 import { LIGHT_BLUE } from "../../../utils/colors";
-import { useFocusEffect } from "@react-navigation/native";
+import { useFocusEffect, useNavigation } from "@react-navigation/native";
 import { getMyTransactions } from "../../../services/transactions";
-import { normalize } from "../../../utils";
 
 const TransactionListScreen: React.FC = () => {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation<any>();
   const { user } = useAuth();
 
   const [transactions, setTransactions] = useState<ITransaction[]>([]);
@@ -48,11 +48,7 @@ const TransactionListScreen: React.FC = () => {
     setRefreshing(false);
   };
 
-  // Filtro de busca local (opcional)
-  // Filtro de busca local Combinado (Texto + Chip)
   const filteredTransactions = transactions.filter((t) => {
-    // Se o filtro for vazio ou "Todas", ele ignora essa parte.
-    // Caso contrário, verifica se a categoria é exatamente a do chip.
     const matchesCategory =
       categoriaFiltro === "" || t.category === categoriaFiltro;
 
@@ -134,13 +130,14 @@ const TransactionListScreen: React.FC = () => {
               <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
             }
             renderItem={({ item }) => (
-              <View
-                style={{
-                  marginBlockEnd: 20,
-                }}
+              <TouchableOpacity
+                style={{ marginVertical: 10 }}
+                onPress={() =>
+                  navigation.navigate("TransactionDetails", { transactionId: item.id })
+                }
               >
                 <TransactionItem transaction={item} />
-              </View>
+              </TouchableOpacity>
             )}
             ListEmptyComponent={
               <View

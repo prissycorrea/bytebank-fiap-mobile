@@ -6,7 +6,7 @@ import { ChartsWidgetStyles } from "./ChartsWidget.styles";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 
 const ChartsWidget: React.FC<{ monthlySummaries: stackDataItem[] }> = ({ monthlySummaries }) => {
-  const currentMonthIndex = new Date().getMonth(); // 0 para Jan, 1 para Fev, etc.
+  const currentMonthIndex = new Date().getMonth();
 
   const renderLegend = (color: string, label: string) => (
     <View
@@ -65,7 +65,7 @@ const ChartsWidget: React.FC<{ monthlySummaries: stackDataItem[] }> = ({ monthly
               color: WHITE,
               fontSize: 14,
               textAlign: "center",
-              marginLeft: -18, // Define uma largura maior que a barra para permitir centralização
+              marginLeft: -18,
             }}
           />
         </>

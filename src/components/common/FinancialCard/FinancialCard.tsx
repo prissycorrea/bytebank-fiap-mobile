@@ -38,12 +38,9 @@ const FinancialCard: React.FC<{ items: FinancialCardProps[] }> = ({ items }) => 
         data={items}
         renderItem={({ item }) => <CarouselItem {...item} />}
         keyExtractor={(item) => item.type}
-        // --- ⚙️ Propriedades Essenciais do Carrossel ---
-        horizontal={true} // Rola horizontalmente
-        showsHorizontalScrollIndicator={false} // Oculta a barra de rolagem
-        // onMomentumScrollEnd={(event) => { /* Opcional: Lógica para saber em qual slide parou */ }}
-        // ---------------------------------------------
-        contentContainerStyle={{ gap: 16, paddingInlineEnd: 24 }} // Espaçamento entre os cards
+        horizontal={true}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{ gap: 16, paddingInlineEnd: 24 }}
       />
     </View>
   );

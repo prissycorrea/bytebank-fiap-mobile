@@ -98,7 +98,7 @@ export const RegisterScreen: React.FC<RegisterScreenProps> = ({ onBackToLogin })
   };
 
   if (showSuccess) {
-    return <SuccessScreen />;
+    return <SuccessScreen successProps={{ title: "Cadastro realizado!", hasLogo: true, subtitle: "Seja bem-vindo ao ByteBank!" }} />;
   }
 
   return (
